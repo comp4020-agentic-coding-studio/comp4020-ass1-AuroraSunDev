@@ -17,7 +17,7 @@ const initialStop = getStateForPlace(place, 0);
   <p class="place-section-mechanism">{place.mechanism}</p>
   <p class="place-section-contrast">{place.contrast}</p>
   <div class="place-section-timeline">
-    <TimeSlider scope={place.id} />
     <PlaceVisual place={place} scope={place.id} stop={initialStop} />
+    <TimeSlider scope={place.id} />
   </div>
 </section>

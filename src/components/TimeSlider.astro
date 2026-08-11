@@ -20,12 +20,12 @@ const max = TIMELINE.length - 1;
     value="0"
     aria-label={`Time since humans disappear (${scope})`}
   />
-  <output data-testid="time-readout" data-scope={scope} role="status" aria-live="polite">
+  <output data-testid="time-readout" data-scope={scope} role="status" aria-live="polite" class="sr-only">
     {TIMELINE[0]?.label}
   </output>
-  <ol class="time-slider-ticks" aria-hidden="true">
-    {TIMELINE.map((stop) => (
-      <li>{stop.label}</li>
+  <ol class="time-slider-ticks" data-scope={scope} aria-hidden="true">
+    {TIMELINE.map((stop, index) => (
+      <li data-index={index} class={index === 0 ? "is-active" : undefined}>{stop.label}</li>
     ))}
   </ol>
 </div>

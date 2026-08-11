@@ -13,10 +13,18 @@ function bindTimeSlider(
   const readout = document.querySelector<HTMLElement>(
     `[data-testid="time-readout"][data-scope="${scope}"]`,
   );
+  const tickList = document.querySelector<HTMLOListElement>(
+    `.time-slider-ticks[data-scope="${scope}"]`,
+  );
   if (!slider) return null;
   const update = () => {
     const stopIndex = Number(slider.value);
     if (readout) readout.textContent = TIMELINE[stopIndex]?.label ?? "";
+    if (tickList) {
+      tickList.querySelectorAll("li").forEach((tick, index) => {
+        tick.classList.toggle("is-active", index === stopIndex);
+      });
+    }
     onChange(stopIndex);
   };
   slider.addEventListener("input", update);

@@ -8,20 +8,22 @@ import { getStateForPlace } from "../lib/interaction";
 ---
 
 <Layout title="When Humans Vanish">
-  <header>
-    <nav aria-label="Primary">
-      <a href="./">Home</a>
+  <header class="site-header">
+    <nav aria-label="Primary" class="site-header-nav">
+      <a href="./" class="site-header-brand">When Humans Vanish</a>
     </nav>
   </header>
   <main>
-    <h1>When Humans Vanish</h1>
-    <p data-testid="intro">
-      Human absence doesn't affect every place equally. The more a place's
-      current condition depends on continuous human maintenance, the faster
-      — and more differently — it responds once that maintenance stops. Scrub
-      each place's own timeline below to see how, then compare any subset of
-      them at the same moment in time.
-    </p>
+    <section class="hero">
+      <h1>When Humans Vanish</h1>
+      <p data-testid="intro" class="hero-intro">
+        Human absence doesn't affect every place equally. The more a place's
+        current condition depends on continuous human maintenance, the faster
+        — and more differently — it responds once that maintenance stops. Scrub
+        each place's own timeline below to see how, then compare any subset of
+        them at the same moment in time.
+      </p>
+    </section>
 
     {PLACES.map((place) => <PlaceSection place={place} />)}
 
@@ -40,16 +42,16 @@ import { getStateForPlace } from "../lib/interaction";
           </label>
         ))}
       </fieldset>
+      <div class="compare-grid" data-testid="compare-grid">
+        {PLACES.map((place) => (
+          <PlaceVisual place={place} scope="compare" stop={getStateForPlace(place, 0)} />
+        ))}
+      </div>
       <div class="compare-section-controls">
         <TimeSlider scope="compare" />
         <button type="button" data-testid="compare-play" aria-pressed="false">
           Play
         </button>
-      </div>
-      <div class="compare-grid" data-testid="compare-grid">
-        {PLACES.map((place) => (
-          <PlaceVisual place={place} scope="compare" stop={getStateForPlace(place, 0)} />
-        ))}
       </div>
     </section>
   </main>

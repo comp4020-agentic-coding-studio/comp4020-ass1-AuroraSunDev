@@ -1,96 +1,178 @@
+:root {
+  --ink: #1a1a1a;
+  --muted: #4a4a4a;
+  --accent: #0b5fff;
+  --header-bg: #12181f;
+  --header-fg: #f4f2ec;
+  --rule: #e2ddd2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  padding: 2rem;
   font-family: system-ui, sans-serif;
   line-height: 1.6;
-  color: #1a1a1a;
+  color: var(--ink);
+  background: #fdfcf9;
 }
 
 main {
-  max-width: 40rem;
+  max-width: 48rem;
   margin: 0 auto;
+  padding: 0 2rem 4rem;
 }
 
 a {
-  color: #0b5fff;
+  color: var(--accent);
 }
 
 a:focus-visible,
 input:focus-visible,
 button:focus-visible {
-  outline: 3px solid #0b5fff;
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}
+
+/* Site header */
+
+.site-header {
+  padding: 1.1rem 2rem;
+  background: var(--header-bg);
+  color: var(--header-fg);
+}
+
+.site-header-nav {
+  display: flex;
+  align-items: center;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.site-header-brand {
+  color: var(--header-fg);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.site-header-brand:hover {
+  color: #8ecbff;
+}
+
+/* Hero */
+
+.hero {
+  padding-block: 3.5rem 2.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.hero h1 {
+  margin: 0 0 1.25rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.1rem, 5vw, 3.1rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.hero-intro {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.1rem;
 }
 
 /* Place sections */
 
 .place-section {
-  margin-block: 2.5rem;
-  padding-block: 2rem;
-  border-top: 1px solid #ddd;
+  margin-block: 3rem;
+  padding-block: 2.5rem;
+  border-top: 1px solid var(--rule);
 }
 
 .place-section:first-of-type {
-  border-top: none;
   padding-top: 0;
+  border-top: none;
+}
+
+.place-section h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.6rem;
 }
 
 .place-section-mechanism,
 .place-section-contrast {
-  color: #333;
+  color: var(--muted);
 }
 
 .place-section-timeline {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1.25rem;
-  align-items: flex-start;
-  margin-top: 1.5rem;
-}
-
-@media (width >= 48rem) {
-  .place-section-timeline {
-    flex-direction: row;
-  }
+  margin-top: 2rem;
 }
 
 /* Time slider, shared by every section and the comparison section */
 
 .time-slider {
   width: 100%;
-  max-width: 22rem;
+  max-width: 28rem;
 }
 
 .time-slider input[type="range"] {
   width: 100%;
+  accent-color: var(--accent);
 }
 
 .time-slider-ticks {
   display: flex;
   justify-content: space-between;
-  list-style: none;
-  margin: 0.35rem 0 0;
+  margin: 0.6rem 0 0;
   padding: 0;
+  list-style: none;
+  color: #8a8a8a;
   font-size: 0.7rem;
-  color: #666;
 }
 
 .time-slider-ticks li {
   flex: 1;
   text-align: center;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
-output[data-testid="time-readout"] {
-  display: block;
-  margin-top: 0.35rem;
-  font-weight: 600;
+.time-slider-ticks li.is-active {
+  color: var(--accent);
+  font-weight: 700;
+  transform: translateY(-1px) scale(1.15);
 }
 
 /* Place visual (illustration + caption), used per-section and in the compare grid */
 
 .place-visual {
-  border-left: 4px solid var(--trajectory-color, #999);
-  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 32rem;
+  padding-top: 1rem;
+  border-top: 4px solid var(--trajectory-color, #999);
 }
 
 .place-visual[data-trajectory="decline"] {
@@ -108,19 +190,22 @@ output[data-testid="time-readout"] {
 .place-visual svg[data-testid="place-illustration"] {
   display: block;
   width: 100%;
-  max-width: 18rem;
+  max-width: 30rem;
   height: auto;
 }
 
 .place-visual-label {
-  margin: 0.6rem 0 0.2rem;
+  margin: 0.75rem 0 0.25rem;
   font-weight: 600;
+  text-align: center;
 }
 
 .place-visual-description {
+  max-width: 26rem;
   margin: 0;
-  color: #444;
+  color: var(--muted);
   font-size: 0.9rem;
+  text-align: center;
 }
 
 /* Comparison section */
@@ -128,8 +213,13 @@ output[data-testid="time-readout"] {
 .compare-section {
   max-width: 60rem;
   margin: 3rem auto 0;
-  padding-top: 2rem;
-  border-top: 1px solid #ddd;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.compare-section h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.6rem;
 }
 
 .compare-section fieldset {
@@ -152,37 +242,11 @@ output[data-testid="time-readout"] {
   gap: 0.4rem;
 }
 
-.compare-section-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
-  margin: 1.5rem 0;
-}
-
-.compare-section-controls .time-slider {
-  max-width: 26rem;
-}
-
-button[data-testid="compare-play"] {
-  padding: 0.5rem 1.25rem;
-  border: 1px solid #0b5fff;
-  border-radius: 0.4rem;
-  background: #fff;
-  color: #0b5fff;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-button[data-testid="compare-play"][aria-pressed="true"] {
-  background: #0b5fff;
-  color: #fff;
-}
-
 .compare-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 @media (width >= 60rem) {
@@ -192,11 +256,8 @@ button[data-testid="compare-play"][aria-pressed="true"] {
 }
 
 .compare-grid .place-visual {
-  padding-left: 0.6rem;
-}
-
-.compare-grid .place-visual svg[data-testid="place-illustration"] {
-  max-width: 100%;
+  padding-top: 0.6rem;
+  border-top-width: 3px;
 }
 
 .compare-grid .place-visual-label {
@@ -205,4 +266,28 @@ button[data-testid="compare-play"][aria-pressed="true"] {
 
 .compare-grid .place-visual-description {
   font-size: 0.8rem;
+}
+
+.compare-section-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0 0;
+}
+
+button[data-testid="compare-play"] {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--accent);
+  border-radius: 0.4rem;
+  background: #fff;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button[data-testid="compare-play"][aria-pressed="true"] {
+  background: var(--accent);
+  color: #fff;
 }
