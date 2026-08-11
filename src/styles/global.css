@@ -291,3 +291,50 @@ button[data-testid="compare-play"][aria-pressed="true"] {
   background: var(--accent);
   color: #fff;
 }
+
+/* Site footer */
+
+.site-footer {
+  margin-top: 3rem;
+  padding: 2.5rem 2rem 3rem;
+  background: var(--header-bg);
+  color: var(--header-fg);
+}
+
+.site-footer-inner {
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.site-footer-note {
+  max-width: 36rem;
+  margin: 0 0 1.5rem;
+  color: #c7c2b6;
+  font-size: 0.95rem;
+}
+
+.site-footer-heading {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9a958a;
+}
+
+.site-footer-sources {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+}
+
+.site-footer-sources a {
+  color: #cfe4ff;
+}
+
+.site-footer-sources a:hover {
+  color: #fff;
+}
