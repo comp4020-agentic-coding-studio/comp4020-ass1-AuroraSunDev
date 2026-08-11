@@ -160,3 +160,25 @@ catching you out, a fact about the stack the agent keeps getting wrong --- write
 it down here. Growing this file is the work of harness engineering, and the gap
 between this boilerplate and your own version is part of what your prototype
 says about the developer you're becoming.
+
+## Project editing conventions
+
+Standing conventions, expected to apply across COMP4020 deliverables:
+
+- Verify requirement-sensitive decisions against the current official course
+  source, using the handbook skill or published specification where
+  available, rather than relying on memory or an earlier paraphrase.
+- Follow the technology requirements of the *current* deliverable rather than
+  assuming one stack applies for the whole course --- check the brief before
+  assuming plain HTML/CSS, JavaScript, or any other stack is expected.
+- Follow the routing and deployment requirements of the current deliverable.
+  For static multi-page sites deployed under a GitHub Pages repository
+  subpath, use repository-safe relative links such as `./page.html`.
+- Prefer small, targeted edits over unrelated redesign --- change what the
+  task names, not what's around it.
+- Run `pnpm check` after relevant code or layout changes, before calling it
+  done.
+- Check layout changes at both graded viewports, 1920x1080 and 390x844 ---
+  both count in full.
+- Explain broad or destructive changes (deleting files, rewriting several
+  rules, restructuring pages) and wait for approval before applying them.
