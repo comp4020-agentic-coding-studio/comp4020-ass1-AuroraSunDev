@@ -1,0 +1,36 @@
+---
+import type { NycVisual } from "../../data/places";
+
+interface Props {
+  visual: NycVisual;
+}
+
+const { visual } = Astro.props;
+const waterHeight = (visual.waterLevel / 100) * 140;
+const waterY = 140 - waterHeight;
+const vegetationOpacity = visual.vegetation / 100;
+const damageOpacity = (visual.structuralDamage / 100) * 0.6;
+---
+
+<svg
+  viewBox="0 0 200 140"
+  role="img"
+  aria-label="Illustration of a New York City subway entrance, showing rising water and structural decay over time"
+  data-testid="place-illustration"
+>
+  <rect width="200" height="140" fill="#dbe9f4" />
+  <g data-part="structure">
+    <rect x="30" y="70" width="140" height="70" fill="#8b8f94" />
+    <rect x="50" y="40" width="30" height="30" fill="#5b6167" />
+    <rect x="120" y="40" width="30" height="30" fill="#5b6167" />
+    <rect x="90" y="90" width="20" height="50" fill="#2b2f33" />
+  </g>
+  <g data-part="vegetation" opacity={vegetationOpacity}>
+    <circle cx="45" cy="66" r="5" fill="#3f7d43" />
+    <circle cx="135" cy="66" r="5" fill="#3f7d43" />
+    <circle cx="60" cy="72" r="4" fill="#3f7d43" />
+    <circle cx="150" cy="72" r="4" fill="#3f7d43" />
+  </g>
+  <rect data-part="damage" x="30" y="70" width="140" height="70" fill="#8a5a2b" opacity={damageOpacity} />
+  <rect data-part="water" x="0" y={waterY} width="200" height={waterHeight} fill="#3b7dd8" opacity="0.85" />
+</svg>

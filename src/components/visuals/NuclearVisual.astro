@@ -1,0 +1,48 @@
+---
+import type { NuclearVisual } from "../../data/places";
+
+interface Props {
+  visual: NuclearVisual;
+}
+
+const { visual } = Astro.props;
+const peripheryOpacity = visual.peripheralWeathering / 100;
+const containmentOpacity = (visual.containmentWeathering / 100) * 0.6;
+
+const STATUS_COLOR: Record<NuclearVisual["systemStatus"], string> = {
+  operating: "#2e9e44",
+  "auto-shutdown": "#e0b400",
+  "backup-power": "#e07b00",
+  "cooling-lost": "#c62828",
+  "long-term-containment": "#6b7280",
+};
+
+const STATUS_LABEL: Record<NuclearVisual["systemStatus"], string> = {
+  operating: "Operating",
+  "auto-shutdown": "Auto shutdown",
+  "backup-power": "Backup power",
+  "cooling-lost": "Cooling lost",
+  "long-term-containment": "Long-term containment",
+};
+---
+
+<svg
+  viewBox="0 0 200 140"
+  role="img"
+  aria-label="Illustration of a nuclear power plant, showing peripheral weathering and system status over time"
+  data-testid="place-illustration"
+>
+  <rect width="200" height="140" fill="#dfe7ea" />
+  <g data-part="periphery">
+    <rect x="20" y="90" width="30" height="50" fill="#9aa2a8" />
+    <rect x="150" y="90" width="30" height="50" fill="#9aa2a8" />
+    <rect x="60" y="110" width="70" height="30" fill="#b3bac0" />
+  </g>
+  <rect data-part="periphery-weathering" x="20" y="90" width="160" height="50" fill="#8a5a2b" opacity={peripheryOpacity} />
+  <path data-part="dome" d="M60,140 A40,40 0 0 1 140,140 Z" fill="#c9cfd3" />
+  <path data-part="containment-weathering" d="M60,140 A40,40 0 0 1 140,140 Z" fill="#8a5a2b" opacity={containmentOpacity} />
+  <g data-part="status-badge">
+    <circle data-part="status-dot" cx="172" cy="20" r="8" fill={STATUS_COLOR[visual.systemStatus]} />
+    <text data-part="status-label" x="158" y="23" text-anchor="end" font-size="9" fill="#2b2f33">{STATUS_LABEL[visual.systemStatus]}</text>
+  </g>
+</svg>

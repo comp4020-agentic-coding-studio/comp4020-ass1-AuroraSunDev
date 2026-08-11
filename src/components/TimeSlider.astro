@@ -1,0 +1,31 @@
+---
+import { TIMELINE } from "../data/timeline";
+
+interface Props {
+  scope: string;
+}
+
+const { scope } = Astro.props;
+const max = TIMELINE.length - 1;
+---
+
+<div class="time-slider">
+  <input
+    type="range"
+    data-testid="time-slider"
+    data-scope={scope}
+    min="0"
+    max={max}
+    step="1"
+    value="0"
+    aria-label={`Time since humans disappear (${scope})`}
+  />
+  <output data-testid="time-readout" data-scope={scope} role="status" aria-live="polite">
+    {TIMELINE[0]?.label}
+  </output>
+  <ol class="time-slider-ticks" aria-hidden="true">
+    {TIMELINE.map((stop) => (
+      <li>{stop.label}</li>
+    ))}
+  </ol>
+</div>

@@ -1,0 +1,23 @@
+---
+import type { Place } from "../data/places";
+import TimeSlider from "./TimeSlider.astro";
+import PlaceVisual from "./PlaceVisual.astro";
+import { getStateForPlace } from "../lib/interaction";
+
+interface Props {
+  place: Place;
+}
+
+const { place } = Astro.props;
+const initialStop = getStateForPlace(place, 0);
+---
+
+<section class="place-section" data-testid="place-section" data-place-id={place.id}>
+  <h2>{place.name}</h2>
+  <p class="place-section-mechanism">{place.mechanism}</p>
+  <p class="place-section-contrast">{place.contrast}</p>
+  <div class="place-section-timeline">
+    <TimeSlider scope={place.id} />
+    <PlaceVisual place={place} scope={place.id} stop={initialStop} />
+  </div>
+</section>

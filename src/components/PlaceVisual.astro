@@ -1,0 +1,30 @@
+---
+import type { Place, NycVisual, WallVisual, NuclearVisual, RainforestVisual } from "../data/places";
+import NycVisualIllustration from "./visuals/NycVisual.astro";
+import WallVisualIllustration from "./visuals/WallVisual.astro";
+import NuclearVisualIllustration from "./visuals/NuclearVisual.astro";
+import RainforestVisualIllustration from "./visuals/RainforestVisual.astro";
+
+interface Props {
+  place: Place;
+  scope: string;
+  stop: Place["stops"][number];
+}
+
+const { place, scope, stop } = Astro.props;
+---
+
+<div
+  class="place-visual"
+  data-testid="place-visual"
+  data-place-id={place.id}
+  data-scope={scope}
+  data-trajectory={place.trajectory}
+>
+  {place.id === "nyc" && <NycVisualIllustration visual={stop.visual as NycVisual} />}
+  {place.id === "wall" && <WallVisualIllustration visual={stop.visual as WallVisual} />}
+  {place.id === "nuclear" && <NuclearVisualIllustration visual={stop.visual as NuclearVisual} />}
+  {place.id === "rainforest" && <RainforestVisualIllustration visual={stop.visual as RainforestVisual} />}
+  <p class="place-visual-label" data-testid="place-visual-label">{stop.label}</p>
+  <p class="place-visual-description" data-testid="place-visual-description">{stop.description}</p>
+</div>
