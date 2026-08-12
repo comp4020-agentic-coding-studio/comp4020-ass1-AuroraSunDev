@@ -15,8 +15,10 @@
 }
 
 /*
- * The crowd art is 1500x844 and the word "vanish" has to sit inside one
- * particular figure's body. A plain object-fit: cover image won't do: cover
+ * The crowd art is 1672x941 — its native size, which is the sharpness ceiling:
+ * a 1920-wide frame already upscales it, so never downscale the source. The
+ * word "vanish" has to sit inside one particular figure's body, and a plain
+ * object-fit: cover image won't do: cover
  * crops by an amount that changes with the viewport, so a percentage-placed
  * overlay would drift off the figure. This frame is instead sized to exactly
  * the cover box — never smaller than the viewport, always the art's aspect
@@ -24,7 +26,7 @@
  * at every viewport.
  */
 .intro-frame {
-  --ar: 1.7773; /* 1500 / 844 */
+  --ar: 1.7768; /* 1672 / 941 */
   --frame-w: max(100vw, calc(100dvh * var(--ar)));
   --frame-h: max(100dvh, calc(100vw / var(--ar)));
 
@@ -64,10 +66,18 @@
   background: none;
   color: #1a1a1a;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: calc(var(--frame-w) * 0.0152);
+
+  /*
+   * Set uppercase and bold, which runs far wider than the lowercase word did
+   * at the same size — hence the smaller factor here, tuned so the word still
+   * clears the torso outlines rather than crossing them.
+   */
+  font-size: calc(var(--frame-w) * 0.0118);
   font-style: italic;
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   cursor: pointer;
   translate: -50% -50%;
 }
@@ -122,7 +132,7 @@
 
 .intro-boom.is-erupting {
   opacity: 1;
-  animation: boom-grow var(--boom-duration, 10s) cubic-bezier(0.4, 0, 0.75, 0.5) forwards;
+  animation: boom-grow var(--boom-duration, 6s) cubic-bezier(0.4, 0, 0.75, 0.5) forwards;
 }
 
 @keyframes boom-grow {

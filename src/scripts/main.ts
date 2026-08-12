@@ -93,16 +93,46 @@ const compareSlider = bindTimeSlider("compare", (sliderValue) => {
   for (const place of PLACES) renderVisual(place, "compare", sliderValue);
 });
 
+// Typed locally because startViewTransition isn't in every TS DOM lib yet, and
+// this has to compile whether or not it is.
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (callback: () => void) => unknown;
+};
+
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+// A card has to leave layout entirely for the remaining ones to close the gap,
+// and a property transition can't animate that. Running the change inside a view
+// transition is what makes the survivors glide into the freed cell instead of
+// snapping. Unsupported or reduced-motion just gets the instant reflow.
+function withReflowAnimation(apply: () => void): void {
+  const doc = document as ViewTransitionDocument;
+  if (prefersReducedMotion.matches || typeof doc.startViewTransition !== "function") {
+    apply();
+    return;
+  }
+  doc.startViewTransition(apply);
+}
+
 for (const checkbox of document.querySelectorAll<HTMLInputElement>(
   '[data-testid="compare-toggle"]',
 )) {
   const placeId = checkbox.dataset.placeId;
   const visual = placeId ? findPlaceVisual(placeId, "compare") : null;
-  const sync = () => {
-    if (visual) visual.hidden = !checkbox.checked;
-  };
-  checkbox.addEventListener("change", sync);
-  sync();
+  if (!placeId || !visual) continue;
+
+  // Each card needs its own name for the API to track it across the change;
+  // derived from the data so it stays in step with PLACES.
+  visual.style.setProperty("view-transition-name", `compare-${placeId}`);
+
+  checkbox.addEventListener("change", () => {
+    withReflowAnimation(() => {
+      visual.hidden = !checkbox.checked;
+    });
+  });
+
+  // Initial state matches the checkbox without animating on load.
+  visual.hidden = !checkbox.checked;
 }
 
 // Autoplay: off by default, user-triggered only, and stops at the final

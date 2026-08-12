@@ -196,6 +196,16 @@ button:focus-visible {
   border-top: 4px solid var(--trajectory-color, #999);
 }
 
+/*
+ * Required, not redundant. Unchecking a place sets the `hidden` attribute, and
+ * the browser's own [hidden] { display: none } lives in the UA stylesheet —
+ * which any author `display` declaration outranks, whatever its specificity. So
+ * `display: flex` above kept unchecked places on screen until this rule existed.
+ */
+.place-visual[hidden] {
+  display: none;
+}
+
 .place-visual[data-trajectory="decline"] {
   --trajectory-color: #c0392b;
 }

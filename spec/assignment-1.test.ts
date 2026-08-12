@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { JSDOM } from "jsdom";
 import { describe, expect, it } from "vitest";
@@ -181,6 +181,25 @@ describe("built page: the interaction is actually wired to the data", () => {
     const grid = doc.querySelector('[data-testid="compare-grid"]');
     const visuals = grid?.querySelectorAll('[data-testid="place-visual"][data-scope="compare"]');
     expect(visuals).toHaveLength(PLACES.length);
+  });
+
+  // Guards a bug that shipped: unchecking a place set the `hidden` attribute,
+  // but the browser's [hidden] { display: none } lives in the UA stylesheet and
+  // any author `display` outranks it — so `.place-visual { display: flex }` kept
+  // unchecked places on screen. Asserted against the built CSS, because that is
+  // where the cascade actually resolves.
+  it("ships a rule that collapses an unchecked place, beating .place-visual's display:flex", () => {
+    const cssDir = resolve("dist/_astro");
+    const css = readdirSync(cssDir)
+      .filter((name) => name.endsWith(".css"))
+      .map((name) => readFileSync(resolve(cssDir, name), "utf8"))
+      .join("\n");
+
+    expect(css.length, "found no built CSS to check").toBeGreaterThan(0);
+    expect(
+      css,
+      ".place-visual[hidden] must set display:none, or unchecking a compare toggle does nothing",
+    ).toMatch(/\.place-visual\[hidden\]\s*\{[^}]*display:\s*none/);
   });
 
   it("renders the play control paused by default, with no autoplay on load", () => {
