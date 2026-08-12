@@ -6,7 +6,7 @@ import { assetUrl } from "../lib/asset-url";
 // explainer. Reduced-motion keeps the same beats at a fraction of the length.
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const BOOM_MS = REDUCED ? 400 : 6_000;
+const BOOM_MS = REDUCED ? 400 : 3_000;
 const WHITE_MS = REDUCED ? 200 : 600;
 const LINE_MS = REDUCED ? 1_600 : 2_800;
 

@@ -132,7 +132,7 @@
 
 .intro-boom.is-erupting {
   opacity: 1;
-  animation: boom-grow var(--boom-duration, 6s) cubic-bezier(0.4, 0, 0.75, 0.5) forwards;
+  animation: boom-grow var(--boom-duration, 3s) cubic-bezier(0.4, 0, 0.75, 0.5) forwards;
 }
 
 @keyframes boom-grow {
