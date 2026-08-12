@@ -47,4 +47,13 @@ export const SOURCES: Record<string, Source> = {
       "PNAS — Global tree-ring analysis reveals rapid decrease in tropical tree longevity with temperature",
     url: "https://www.pnas.org/doi/10.1073/pnas.2003873117",
   },
+  "great-wall-biocrust": {
+    title: "Science Advances — Biocrusts protect the Great Wall of China from erosion",
+    url: "https://www.science.org/doi/10.1126/sciadv.adk5892",
+  },
+  "chernobyl-wildlife-census": {
+    title:
+      "Current Biology — Long-term census data reveal abundant wildlife populations at Chernobyl",
+    url: "https://www.cell.com/current-biology/fulltext/S0960-9822(15)00988-4",
+  },
 };

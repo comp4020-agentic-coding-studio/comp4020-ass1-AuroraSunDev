@@ -30,7 +30,7 @@ describe("getStateForPlace", () => {
   }
 });
 
-describe("slider bucketing: one continuous input, two independent buckets", () => {
+describe("slider bucketing: one continuous input, one moment in time", () => {
   it("maps the slider's ends to the first and last timeline stop", () => {
     expect(stopIndexFromSlider(0, TIMELINE.length)).toBe(0);
     expect(stopIndexFromSlider(SLIDER_RESOLUTION, TIMELINE.length)).toBe(TIMELINE.length - 1);
@@ -57,14 +57,16 @@ describe("slider bucketing: one continuous input, two independent buckets", () =
     }
   });
 
-  it("updates the frame bucket more often than the stop bucket while dragging", () => {
-    const frameChanges = new Set<number>();
-    const stopChanges = new Set<number>();
+  // Replaces a test that asserted the frame bucket moved more often than the
+  // stop bucket. That was true when there were seven stops and ten frames, and
+  // it was the bug: at the middle of the slider the caption said "1 year" over
+  // the year-20 drawing. There are ten of each now, and this is the invariant
+  // that makes that disagreement impossible for any slider position at all.
+  it("never shows a caption from a different moment than the frame", () => {
+    expect(TIMELINE.length).toBe(FRAME_COUNT);
     for (let value = 0; value <= SLIDER_RESOLUTION; value++) {
-      frameChanges.add(frameIndexFromSlider(value));
-      stopChanges.add(stopIndexFromSlider(value, TIMELINE.length));
+      expect(frameIndexFromSlider(value)).toBe(stopIndexFromSlider(value, TIMELINE.length) + 1);
     }
-    expect(frameChanges.size).toBeGreaterThan(stopChanges.size);
   });
 
   it("sliderValueForStop is the inverse used by autoplay: it lands back on the same stop", () => {

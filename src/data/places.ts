@@ -15,357 +15,390 @@ export interface Evidence {
   qualification?: string; // states the reasoning gap explicitly
 }
 
-interface StopBase extends Evidence {
+// One stop = one of the ten moments in TIMELINE = one drawn frame. There is no
+// numeric "visual" object any more: it existed to drive the generated SVGs, and
+// once real artwork replaced those, keeping forty invented numbers alive would
+// have been precision the site can't back.
+export interface Stop extends Evidence {
   label: string;
   description: string;
 }
 
-export interface NycVisual {
-  waterLevel: number; // 0-100
-  vegetation: number; // 0-100
-  structuralDamage: number; // 0-100
-}
-
-export interface WallVisual {
-  vegetation: number; // 0-100
-  erosion: number; // 0-100
-  missingSections: number; // 0-100
-}
-
-export type ReactorStatus =
-  | "operating"
-  | "auto-shutdown"
-  | "backup-power"
-  | "cooling-lost"
-  | "long-term-containment";
-
-export interface NuclearVisual {
-  systemStatus: ReactorStatus;
-  peripheralWeathering: number; // 0-100
-  containmentWeathering: number; // 0-100, kept low throughout
-}
-
-export interface RainforestVisual {
-  canopyChange: number; // 0-100, low ceiling
-  wildlifeVisibility: number; // 0-100, low ceiling
-}
-
-interface PlaceOf<Id extends string, V> {
-  id: Id;
+export interface Place {
+  id: string;
   name: string;
   dependency: DependencyLevel;
   trajectory: Trajectory;
   mechanism: string; // why THIS place depends on humans this way
   contrast: string; // how its trajectory differs from the others
-  stops: (StopBase & { visual: V })[]; // same length/order as TIMELINE
+  stops: Stop[]; // same length and order as TIMELINE
 }
 
-export type NycPlace = PlaceOf<"nyc", NycVisual>;
-export type WallPlace = PlaceOf<"wall", WallVisual>;
-export type NuclearPlace = PlaceOf<"nuclear", NuclearVisual>;
-export type RainforestPlace = PlaceOf<"rainforest", RainforestVisual>;
-
-export type Place = NycPlace | WallPlace | NuclearPlace | RainforestPlace;
-
-const nyc: NycPlace = {
+const nyc: Place = {
   id: "nyc",
-  name: "New York City subway",
+  name: "New York City",
   dependency: "high",
   trajectory: "decline",
   mechanism:
-    "The city's tunnels sit below the water table; keeping them dry, powered, and signaled takes continuous, active work.",
+    "A modern city is held up by work that never stops: power, pumping, repair. Take the people away and it comes apart from the inside first, and from the top down.",
   contrast:
-    "Nothing else here changes this fast — most of the transformation happens within the first year, not over centuries.",
+    "The fastest and most complete change of the four. It doesn't end as a ruined city — it ends as a different kind of landscape.",
   stops: [
     {
-      label: "Pumps silent",
+      label: "The lights go out",
       description:
-        "Even on an ordinary dry day the system pumps roughly 10-13 million gallons of groundwater out daily; that stops immediately, and water starts rising the same day.",
+        "Cars lose their drivers and stop where they are, trains brake themselves, and by nightfall whole districts are dark with nobody left to hold the grid together.",
       evidence: "inferred",
-      sourceIds: ["mta-daily-pumping"],
+      sourceIds: [],
       qualification:
-        "extrapolated from today's continuous pumping requirement — no real case of NYC's pumps actually stopping.",
-      visual: { waterLevel: 5, vegetation: 0, structuralDamage: 2 },
+        "how many hours the grid lasts can't be predicted; what is certain is the direction — faults occur and nobody restores anything.",
     },
     {
-      label: "Low sections filling",
+      label: "Underground starts filling",
       description:
-        "At that same seepage rate, the lowest-lying tunnels are accumulating serious standing water within days.",
-      evidence: "inferred",
-      sourceIds: ["mta-daily-pumping", "sandy-flooding"],
-      visual: { waterLevel: 25, vegetation: 0, structuralDamage: 5 },
-    },
-    {
-      label: "Substantially flooded",
-      description:
-        "Most below-water-table sections are underwater; drier upper sections start showing rust and early plant growth.",
+        "The pumps that lift roughly 13 million gallons a day out of the subway need power, so the lowest tunnels begin to hold water.",
       evidence: "inferred",
       sourceIds: ["mta-daily-pumping", "sandy-flooding"],
       qualification:
-        "real storm-flood events show partial flooding when pumps are overwhelmed; full, permanent pump loss is inferred to be worse, not itself observed.",
-      visual: { waterLevel: 55, vegetation: 3, structuralDamage: 15 },
+        "extrapolated from today's continuous pumping requirement; no real case exists of the pumps stopping for good.",
     },
     {
-      label: "Systems corroding",
+      label: "A city on pause",
       description:
-        "Standing water and open air are destroying rails, third-rail power, and signaling electronics.",
+        "Screens, lifts and traffic lights are dead and the streets are silent, but from the air almost nothing has changed yet.",
       evidence: "inferred",
-      sourceIds: ["mta-daily-pumping"],
-      visual: { waterLevel: 75, vegetation: 10, structuralDamage: 40 },
+      sourceIds: [],
     },
     {
-      label: "Structurally failing",
+      label: "Nature finds the cracks",
       description:
-        "Freeze-thaw and water pressure are collapsing weaker sections.",
+        "One full winter opens the asphalt, blocked drains hold water, and the first plants take the street.",
       evidence: "inferred",
       sourceIds: [],
       qualification:
-        "reasoned by analogy with other abandoned flooded infrastructure; no specific cited case.",
-      visual: { waterLevel: 85, vegetation: 25, structuralDamage: 65 },
+        "freeze-thaw damage to concrete and asphalt is well documented; applying it to an unmaintained city is reasoning, not a case study.",
     },
     {
-      label: "Mostly collapsed",
+      label: "Visibly abandoned",
       description:
-        "Flood-prone tunnels are largely collapsed voids; drier sections retain more structure.",
+        "Shrubs and young trees stand in the roadway, glass is failing across the facades, and the edge between park and city stops being obvious.",
       evidence: "inferred",
       sourceIds: [],
-      visual: { waterLevel: 90, vegetation: 40, structuralDamage: 85 },
     },
     {
-      label: "Barely legible",
+      label: "Streets become corridors",
       description:
-        "Little of the flood-exposed network survives as open tunnel.",
+        "Trees are tall enough to shade the avenues, and the cars are rusted frames still sitting in the positions where they stopped.",
+      evidence: "inferred",
+      sourceIds: [],
+    },
+    {
+      label: "The forest closes over",
+      description:
+        "Canopy meets across most streets, smaller buildings are collapsing, and the subway is now a flooded cave system.",
+      evidence: "inferred",
+      sourceIds: [],
+    },
+    {
+      label: "Towers without skin",
+      description:
+        "Curtain walls are largely gone and some bridges have lost spans, but the concrete cores still stand above the trees.",
       evidence: "inferred",
       sourceIds: [],
       qualification:
-        "beyond any direct evidence; reasoned from general material-degradation timescales, not a documented case.",
-      visual: { waterLevel: 92, vegetation: 55, structuralDamage: 95 },
+        "steel and reinforced concrete fail on different schedules, and no two structures here would go at once; this is the general direction, not a prediction about any one building.",
+    },
+    {
+      label: "City becomes terrain",
+      description:
+        "Many towers are rubble mounds under forest and the waterfront has turned to marsh — from above, the street grid is what still gives it away.",
+      evidence: "inferred",
+      sourceIds: [],
+    },
+    {
+      label: "An archaeological site",
+      description:
+        "The skyline is essentially gone: forest, wetland and a few enormous concrete remains. New York hasn't vanished, it has become a site.",
+      evidence: "inferred",
+      sourceIds: [],
+      qualification:
+        "beyond any direct evidence. What holds it up is that tunnels, foundations and made ground don't erase — they get buried and stay findable.",
     },
   ],
 };
 
-const wall: WallPlace = {
-  id: "wall",
-  name: "The Great Wall of China",
-  dependency: "low",
-  trajectory: "decline",
-  mechanism:
-    "Built to endure with little upkeep — but not none: real unmaintained sections are crumbling right now, not hypothetically.",
-  contrast:
-    "The slowest of the four by far, and its later states aren't a guess — comparable unmaintained sections already exist today.",
-  stops: [
-    {
-      label: "No visible change",
-      description:
-        "True today regardless of the premise — this structure doesn't change on a scale of days.",
-      evidence: "observed",
-      sourceIds: [],
-      visual: { vegetation: 0, erosion: 0, missingSections: 0 },
-    },
-    {
-      label: "No visible change",
-      description: "Same as a day earlier.",
-      evidence: "observed",
-      sourceIds: [],
-      visual: { vegetation: 0, erosion: 0, missingSections: 0 },
-    },
-    {
-      label: "Quietly unvisited",
-      description:
-        "No structural change yet; without tourists or vendors, nearby paths go unused.",
-      evidence: "observed",
-      sourceIds: [],
-      visual: { vegetation: 2, erosion: 1, missingSections: 0 },
-    },
-    {
-      label: "Cracks take root",
-      description: "Vegetation begins establishing in unmaintained mortar joints.",
-      evidence: "inferred",
-      sourceIds: ["great-wall-loss"],
-      qualification:
-        "extrapolated from typical reports of vegetation establishing in unmaintained mortar joints.",
-      visual: { vegetation: 8, erosion: 3, missingSections: 0 },
-    },
-    {
-      label: "Exposed sections erode fast",
-      description:
-        "Wind and weather strip weaker construction far faster than the stone core.",
-      evidence: "inferred",
-      sourceIds: ["great-wall-gansu-erosion"],
-      qualification:
-        "calibrated against a real reported case (~25 miles of exposed wall eroded to mounds of dirt within ~20 years in Gansu) but applied here by analogy, not as a direct observation of this wall segment.",
-      visual: { vegetation: 20, erosion: 15, missingSections: 2 },
-    },
-    {
-      label: "Uneven survival",
-      description:
-        "Weaker construction is failing much faster than well-built stone sections.",
-      evidence: "inferred",
-      sourceIds: ["great-wall-loss"],
-      qualification:
-        "calibrated against the present-day ~30% overall loss figure — itself the product of centuries of mixed, uneven maintenance history, used here only as an order-of-magnitude analogy.",
-      visual: { vegetation: 35, erosion: 40, missingSections: 20 },
-    },
-    {
-      label: "What already happens to old sections",
-      description:
-        "The closest real analogy: pre-Ming sections left unmaintained this long are reported as almost entirely disappeared.",
-      evidence: "inferred",
-      sourceIds: ["great-wall-loss"],
-      qualification:
-        "the real pre-Ming wall has been unmaintained for a comparably long span and is reported as 'almost entirely disappeared' — the closest available analogy, not a direct observation of this scenario.",
-      visual: { vegetation: 45, erosion: 65, missingSections: 45 },
-    },
-  ],
-};
-
-const nuclear: NuclearPlace = {
+const nuclear: Place = {
   id: "nuclear",
   name: "Nuclear power plant",
   dependency: "high",
   trajectory: "compound",
   mechanism:
-    "Its safety and cooling systems need continuous power and attention; its containment structure was engineered for a multi-decade service life largely independent of day-to-day upkeep.",
+    "Its safety systems need power and attention continuously; its containment shell was engineered to need almost nothing. The same site runs on two clocks at once.",
   contrast:
-    "It changes almost as fast as the subway at first, but plateaus much lower — the one place here where fast collapse and long endurance happen at the same time, in different parts of the same site.",
+    "The only place here whose worst moment comes in the first weeks and then recedes. After that the story stops being the accident and becomes weather and forest.",
   stops: [
     {
-      label: "Automatic shutdown",
+      label: "It shuts itself down",
       description:
-        "Reactors are designed to SCRAM (automatic emergency shutdown) on their own; the plant switches to backup diesel power.",
+        "Grid trouble triggers an automatic emergency shutdown and the backup diesels take over; from outside, nothing looks wrong at all.",
       evidence: "inferred",
       sourceIds: ["nrc-scram"],
       qualification:
-        "SCRAM and the switch to backup power are real, regularly-tested reactor behavior — but applying that behavior to this specific human-disappearance scenario is still a projection onto a case that hasn't happened, not itself an observed outcome.",
-      visual: { systemStatus: "auto-shutdown", peripheralWeathering: 2, containmentWeathering: 0 },
+        "automatic shutdown is real, regularly-tested reactor behaviour, but applying it to this scenario is still a projection onto a case that hasn't happened.",
     },
     {
-      label: "Backup power the bottleneck",
-      description: "Diesel fuel and battery reserves are finite without anyone to resupply them.",
+      label: "The dangerous week",
+      description:
+        "Shutdown is not cooling: the fuel keeps making decay heat, and wherever diesel, batteries or pumps run out first, cooling is lost.",
       evidence: "inferred",
       sourceIds: ["unmanned-reactor-estimate"],
       qualification:
-        "a published estimate for a fully unattended plant, not a documented case of one actually left unattended this long.",
-      visual: { systemStatus: "backup-power", peripheralWeathering: 5, containmentWeathering: 0 },
+        "a published estimate for an unattended plant, not a record of one actually left alone this long.",
     },
     {
-      label: "Cooling lost",
-      description: "Without power, active cooling stops and fuel-handling systems go idle.",
+      label: "Already decided",
+      description:
+        "The violent phase is over: some plants held, others have damaged fuel and a building opened by a hydrogen explosion — not a nuclear one.",
       evidence: "inferred",
       sourceIds: ["unmanned-reactor-estimate", "nrc-scram"],
       qualification:
-        "real station-blackout events show fuel damage can begin once cooling is lost this long, but outcomes are highly design-dependent.",
-      visual: { systemStatus: "cooling-lost", peripheralWeathering: 15, containmentWeathering: 1 },
+        "outcomes are strongly design-dependent; real station-blackout events show the mechanism but not a single common result.",
     },
     {
-      label: "Containment endures",
+      label: "An industrial ruin",
       description:
-        "Whatever happens to the fuel and cooling systems has typically played out within the first year; the structure remains standing regardless.",
+        "Nothing is exploding any more. Grass comes up through the car park while parts of the buildings stay lethal to stand in.",
       evidence: "inferred",
       sourceIds: [],
-      visual: { systemStatus: "cooling-lost", peripheralWeathering: 30, containmentWeathering: 2 },
     },
     {
-      label: "Two speeds, one site",
+      label: "Green against concrete",
       description:
-        "The buildings around it are visibly weathering while the containment structure itself shows almost nothing.",
+        "Fences rust and saplings take the yard, but the reactor building is as conspicuous as it was on day one.",
       evidence: "inferred",
       sourceIds: ["containment-design-life"],
       qualification:
-        "containment structures are licensed/engineered for roughly 40-60 years of service life — this stop is well within that, but the plant is no longer being licensed or inspected, so this is reasoned, not a design-life guarantee.",
-      visual: { systemStatus: "long-term-containment", peripheralWeathering: 55, containmentWeathering: 4 },
+        "containment is engineered for roughly a 40-60 year service life; this stop sits well inside that, though nobody is inspecting it any more.",
     },
     {
-      label: "Structure outlasts function",
+      label: "More animals, not fewer",
       description:
-        "The reactor's operating life is long over; its concrete shell is still doing the one job it has left.",
+        "Contaminated ground doesn't empty out. Long-term counts at Chernobyl found large mammals as common as in clean reserves nearby, and wolves far more so.",
+      evidence: "inferred",
+      sourceIds: ["chernobyl-wildlife-census"],
+      qualification:
+        "that census measures how many animals are present, not how healthy each one is, and a later re-analysis disputes it. Applied here by analogy.",
+    },
+    {
+      label: "Forest takes the site",
+      description:
+        "Transmission towers are down and the offices have collapsed; the containment shell is cracking but still standing.",
+      evidence: "inferred",
+      sourceIds: ["containment-design-life"],
+    },
+    {
+      label: "A fortress in a forest",
+      description:
+        "From the outside you would struggle to tell that an accident ever happened here.",
       evidence: "inferred",
       sourceIds: ["containment-design-life"],
       qualification:
-        "well beyond any structure's documented design life (~40-60 years); reasoned from general concrete-durability engineering, not an industry claim about this timescale.",
-      visual: { systemStatus: "long-term-containment", peripheralWeathering: 75, containmentWeathering: 8 },
+        "well past any documented design life; reasoned from general concrete durability rather than an industry claim about this timescale.",
     },
     {
-      label: "A concrete monument",
+      label: "Industrial archaeology",
       description:
-        "Everything that needed people is long gone; what's left is mostly the shell built to not need them.",
+        "The medium-lived contamination has mostly decayed away. What remains is heavy concrete and a few very long-lived hot spots.",
       evidence: "inferred",
-      sourceIds: ["containment-design-life"],
+      sourceIds: [],
       qualification:
-        "far beyond any real design-life figure or observed case; a general engineering extrapolation, held deliberately modest (containmentWeathering stays low) rather than asserting precise survival.",
-      visual: { systemStatus: "long-term-containment", peripheralWeathering: 88, containmentWeathering: 15 },
+        "caesium and strontium decay on a scale of decades, but fuel-derived heavy elements do not — the site gets safer without becoming clean.",
+    },
+    {
+      label: "An ancient ruin",
+      description:
+        "A half-collapsed cooling tower and huge concrete walls in mature forest. Anyone arriving without records would read it as some older civilisation's works.",
+      evidence: "inferred",
+      sourceIds: [],
     },
   ],
 };
 
-const rainforest: RainforestPlace = {
+const wall: Place = {
+  id: "wall",
+  name: "The Great Wall of China",
+  dependency: "low",
+  trajectory: "decline",
+  mechanism:
+    "Built to endure with very little upkeep — but not none. Sections nobody maintains are eroding right now, which is why its future isn't guesswork.",
+  contrast:
+    "By far the slowest of the four, and the only one whose later states you can already go and look at today.",
+  stops: [
+    {
+      label: "Only the visitors are gone",
+      description:
+        "Nothing about the structure has changed. The single difference is that from now on nobody will ever repair it.",
+      evidence: "observed",
+      sourceIds: [],
+    },
+    {
+      label: "Identical to today",
+      description: "A week is nothing to something that has stood for centuries.",
+      evidence: "observed",
+      sourceIds: [],
+    },
+    {
+      label: "The drains start to clog",
+      description: "Leaves and soil gather where they used to be swept away.",
+      evidence: "observed",
+      sourceIds: [],
+    },
+    {
+      label: "One full winter",
+      description:
+        "Water, salt and freeze-thaw work at the joints; grass holds the brickwork and a few facing bricks come loose.",
+      evidence: "inferred",
+      sourceIds: ["great-wall-loss"],
+      qualification:
+        "extrapolated from reported decay of unmaintained sections, not measured on any specific stretch.",
+    },
+    {
+      label: "The visitor centre goes first",
+      description:
+        "Ticket offices, railings and cable cars rot much faster than the wall does — and on the earthen sections, moss and bacterial crusts turn out to protect the surface rather than eat it.",
+      evidence: "inferred",
+      sourceIds: ["great-wall-biocrust"],
+      qualification:
+        "the protective effect of biocrusts was measured on today's drier rammed-earth sections; how far it holds elsewhere is unknown.",
+    },
+    {
+      label: "The wild wall",
+      description:
+        "Battlements are missing in stretches, a watchtower has lost its top, and the rammed-earth core shows through where facing has fallen away.",
+      evidence: "inferred",
+      sourceIds: ["great-wall-gansu-erosion"],
+      qualification:
+        "calibrated against a real case — roughly 25 miles of exposed wall eroded to mounds within about 20 years in Gansu — applied here by analogy.",
+    },
+    {
+      label: "No longer continuous",
+      description:
+        "You could not walk it any more. The line breaks into segments, and in summer the forest hides most of them.",
+      evidence: "inferred",
+      sourceIds: ["great-wall-loss"],
+    },
+    {
+      label: "Merging with the ridge",
+      description:
+        "Long runs read as raised mounds and stone footings rather than as a wall.",
+      evidence: "inferred",
+      sourceIds: ["great-wall-loss"],
+      qualification:
+        "calibrated against the present-day figure of roughly a third already lost, itself the product of a long, uneven maintenance history.",
+    },
+    {
+      label: "Landform, not architecture",
+      description:
+        "What stays legible is a suspiciously straight line running along the ridge under the trees.",
+      evidence: "inferred",
+      sourceIds: ["great-wall-loss"],
+    },
+    {
+      label: "Still not gone",
+      description:
+        "Continuous wall has largely disappeared, but footings, scattered stone and buried earth remain — and some sections have already survived unmaintained for more than a thousand years.",
+      evidence: "inferred",
+      sourceIds: ["great-wall-loss"],
+      qualification:
+        "the pre-Ming wall is the closest real analogy: unmaintained for a comparable span and reported as almost entirely disappeared as a wall, while still being findable as a site.",
+    },
+  ],
+};
+
+const rainforest: Place = {
   id: "rainforest",
   name: "Tropical rainforest, undisturbed",
   dependency: "low",
   trajectory: "independent",
   mechanism:
-    "This forest's current condition already reflects centuries of its own ecological cycles rather than active upkeep — it has very low direct dependence on continuous human maintenance, unlike a subway system or a power plant.",
+    "Nothing here was being maintained in the first place. This forest's condition is the product of its own cycles — trees falling, gaps opening, seedlings racing for the light.",
   contrast:
-    "Because its condition was never propped up by continuous maintenance in the first place, removing that maintenance doesn't trigger the kind of rapid change seen in built infrastructure — what change does happen here runs on the forest's own, much slower clock.",
+    "The only place whose first and last frames could be swapped without anyone noticing. What changes it over 500 years is climate, not our absence.",
   stops: [
     {
-      label: "Unchanged",
-      description: "Indistinguishable from any other day.",
+      label: "Completely normal",
+      description: "Nothing was being held up here, so nothing falls.",
       evidence: "observed",
       sourceIds: [],
-      visual: { canopyChange: 0, wildlifeVisibility: 0 },
     },
     {
-      label: "Unchanged",
-      description: "The forest's normal cycles continue exactly as before.",
-      evidence: "observed",
-      sourceIds: [],
-      visual: { canopyChange: 0, wildlifeVisibility: 1 },
-    },
-    {
-      label: "Quieter, not different",
-      description: "The only real difference is what's absent nearby, if anything ever was.",
-      evidence: "observed",
-      sourceIds: [],
-      visual: { canopyChange: 1, wildlifeVisibility: 2 },
-    },
-    {
-      label: "Slightly bolder wildlife",
+      label: "Still nothing",
       description:
-        "Human-avoidant species may become somewhat more visible when human presence drops nearby.",
-      evidence: "inferred",
+        "A big tree comes down and tears a hole in the canopy — exactly as it would have anyway.",
+      evidence: "observed",
       sourceIds: [],
-      qualification:
-        "some studies document human-avoidant species becoming more visible when human presence drops; effect size varies a lot by site and species, and this forest was already relatively undisturbed.",
-      visual: { canopyChange: 2, wildlifeVisibility: 4 },
     },
     {
-      label: "Its own clock",
+      label: "The change is at the edges",
       description:
-        "Tropical forest turnover is generally estimated at under ~400 years, driven by storms, tree deaths, and succession that were already running before anyone was nearby.",
+        "Logging, burning and road-building stop. In the interior you would never know.",
+      evidence: "observed",
+      sourceIds: [],
+    },
+    {
+      label: "Its own cycle",
+      description:
+        "Old trees die, gaps open, seedlings race upward, and the canopy closes again.",
       evidence: "inferred",
       sourceIds: ["tree-longevity"],
-      visual: { canopyChange: 4, wildlifeVisibility: 6 },
     },
     {
-      label: "Turned over, not transformed",
+      label: "You could not tell",
       description:
-        "Forest structure recovers to old-growth levels on a decades-to-a-century scale, well within the forest's own turnover rhythm.",
+        "From the air, five years without humans is indistinguishable from today.",
+      evidence: "inferred",
+      sourceIds: [],
+    },
+    {
+      label: "Young forest on old scars",
+      description:
+        "The interior keeps its rhythm while cleared land outside it grows a convincing young forest.",
       evidence: "inferred",
       sourceIds: ["forest-succession-recovery"],
       qualification:
-        "a long-term Panama study found forest structure recovers to old-growth levels by ~90 years after a disturbance, but full community composition can take much longer — used here as an order-of-magnitude reference, not a claim about this specific forest.",
-      visual: { canopyChange: 8, wildlifeVisibility: 8 },
+        "recovery rate depends heavily on how often the land burned and how close intact forest is; 20 years is enough for structure, not for everything.",
     },
     {
-      label: "Governed by itself",
+      label: "Fragments rejoin",
       description:
-        "Canopy generations have turned over on the forest's own ecological terms, not because anyone left.",
+        "Roads and pasture close over, and the forest becomes more continuous than it is today.",
+      evidence: "inferred",
+      sourceIds: [],
+    },
+    {
+      label: "Structure back, composition not",
+      description:
+        "Height and biomass return on abandoned land, but the mix of species does not simply come back.",
+      evidence: "inferred",
+      sourceIds: ["forest-succession-recovery"],
+      qualification:
+        "a long-term Panama study found structure recovering to old-growth levels in about 90 years while community composition lagged far behind.",
+    },
+    {
+      label: "Traces hard to find",
+      description:
+        "Many tree generations later, the old clearings are difficult to pick out from above.",
+      evidence: "inferred",
+      sourceIds: [],
+    },
+    {
+      label: "Still rainforest, different trees",
+      description:
+        "This frame and the first one may be impossible to tell apart — though the river has moved and not one of these trees is the same.",
       evidence: "inferred",
       sourceIds: ["tree-longevity", "forest-succession-recovery"],
       qualification:
-        "within known tropical forest turnover timescales, but no study observes any one forest over a literal 500-year unvisited window — reasoned extrapolation.",
-      visual: { canopyChange: 13, wildlifeVisibility: 10 },
+        "no study watches one forest for 500 unvisited years. And greenhouse gases already emitted don't leave with us, so the drier southern and eastern margins are genuinely uncertain — that would be climate deciding, not our absence.",
     },
   ],
 };

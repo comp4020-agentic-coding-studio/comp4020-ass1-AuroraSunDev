@@ -25,7 +25,7 @@ const { scope } = Astro.props;
   </output>
   <ol class="time-slider-ticks" data-scope={scope} aria-hidden="true">
     {TIMELINE.map((stop, index) => (
-      <li data-index={index} class={index === 0 ? "is-active" : undefined}>{stop.label}</li>
+      <li data-index={index} class={index === 0 ? "is-active" : undefined}>{stop.short}</li>
     ))}
   </ol>
 </div>

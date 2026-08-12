@@ -4,10 +4,9 @@ import { JSDOM } from "jsdom";
 import { describe, expect, it } from "vitest";
 import astroConfig from "../astro.config";
 import { PLACES } from "../src/data/places";
-import type { NycVisual, WallVisual, NuclearVisual, RainforestVisual } from "../src/data/places";
 import { TIMELINE } from "../src/data/timeline";
 import { SOURCES } from "../src/data/sources";
-import { SLIDER_RESOLUTION, getStateForPlace } from "../src/lib/interaction";
+import { FRAME_COUNT, SLIDER_RESOLUTION, getStateForPlace } from "../src/lib/interaction";
 
 // Assignment 1 published spec, split into what a test can hold:
 // https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/assessments/assignment-1/
@@ -70,11 +69,10 @@ describe("data contract: every place's stops carry a real, grounded story", () =
         expect(place.contrast.length).toBeGreaterThan(0);
       });
 
-      it("has a non-empty label, description and visual object on every stop", () => {
+      it("has a non-empty label and description on every stop", () => {
         for (const stop of place.stops) {
           expect(stop.label.length).toBeGreaterThan(0);
           expect(stop.description.length).toBeGreaterThan(0);
-          expect(stop.visual).toBeTypeOf("object");
         }
       });
 
@@ -90,28 +88,19 @@ describe("data contract: every place's stops carry a real, grounded story", () =
         }
       });
 
-      it("has a visual shape specific to this place, with every field a finite number (or, for the reactor, a known status)", () => {
-        for (const stop of place.stops) {
-          const visual = stop.visual as
-            | NycVisual
-            | WallVisual
-            | NuclearVisual
-            | RainforestVisual;
-          for (const [key, value] of Object.entries(visual)) {
-            if (key === "systemStatus") {
-              expect([
-                "operating",
-                "auto-shutdown",
-                "backup-power",
-                "cooling-lost",
-                "long-term-containment",
-              ]).toContain(value);
-            } else {
-              expect(Number.isFinite(value), `${place.id}.${key} is not a finite number`).toBe(
-                true,
-              );
-            }
-          }
+      // Replaces an assertion about each place's numeric `visual` object. Those
+      // numbers drove the generated SVGs; once real artwork replaced them the
+      // field was read by nothing but this test, so it was removed rather than
+      // extended to forty invented values. What matters now is that a stop and
+      // its drawn frame are the same moment, which is what this holds.
+      it("has one stop per drawn frame, so no caption can describe a different frame", () => {
+        expect(place.stops).toHaveLength(FRAME_COUNT);
+        for (let frameIndex = 1; frameIndex <= FRAME_COUNT; frameIndex++) {
+          const framePath = resolve(`public/scenes/${place.id}/${frameIndex}.jpg`);
+          expect(
+            existsSync(framePath),
+            `${place.id} stop ${frameIndex} has no frame at public/scenes/${place.id}/${frameIndex}.jpg`,
+          ).toBe(true);
         }
       });
 

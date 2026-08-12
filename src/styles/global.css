@@ -160,6 +160,11 @@ button:focus-visible {
   accent-color: var(--accent);
 }
 
+/*
+ * Ten ticks, not seven, so these are the abbreviated labels ("250y") — the full
+ * ones ("250 years") stay in the screen-reader readout and the caption. At phone
+ * width ten cells are about 34px each, which is what the size below is set for.
+ */
 .time-slider-ticks {
   display: flex;
   justify-content: space-between;
@@ -167,11 +172,13 @@ button:focus-visible {
   padding: 0;
   list-style: none;
   color: #8a8a8a;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .time-slider-ticks li {
   flex: 1;
+  min-width: 0;
   text-align: center;
   transition:
     color 0.2s ease,
@@ -292,6 +299,18 @@ button:focus-visible {
   border-top-width: 3px;
 }
 
+/*
+ * The four scenes aren't all shot at one aspect ratio — the wall is 3:2, the
+ * rest 16:9 — and side by side that put one card's caption lower than the
+ * others, which reads as a mistake in the one place the whole comparison is
+ * supposed to be legible. Forcing a single box here lines the captions up. Only
+ * the thumbnails are cropped; each section above still shows its frame whole.
+ */
+.compare-grid .place-visual-frame {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
 .compare-grid .place-visual-label {
   font-size: 0.9rem;
 }
@@ -322,6 +341,35 @@ button[data-testid="compare-play"] {
 button[data-testid="compare-play"][aria-pressed="true"] {
   background: var(--accent);
   color: #fff;
+}
+
+/* Closing question */
+
+/*
+ * Set at reading width rather than the full page width: this is the one part of
+ * the site that is the author talking, so it should read like prose, not like
+ * another panel of the exhibit.
+ */
+.closing-section {
+  max-width: 44rem;
+  margin: 4rem auto 0;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.closing-section h2 {
+  margin-bottom: 1.25rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.6rem;
+}
+
+.closing-section p {
+  font-size: 1.05rem;
+}
+
+.closing-section-invite {
+  color: var(--muted);
+  font-style: italic;
 }
 
 /* Site footer */
