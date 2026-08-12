@@ -25,3 +25,6 @@ mise.local.toml
 # raw source photography (~110MB of originals) — only the optimized
 # public/scenes/**/*.jpg + public/hero.jpg outputs are committed
 src/assets/
+
+# local working notes, not part of the submission
+人类突然消失演变.md
