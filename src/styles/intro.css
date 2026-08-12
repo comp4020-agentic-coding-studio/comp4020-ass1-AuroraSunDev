@@ -55,7 +55,11 @@
  * artwork: the torso's outlines sit at 45.9% and 51.4% across, so it centres
  * on 48.66% and is 5.5% of the frame wide, and it spans 50% to 64.5% down,
  * centring on 57.3%. The font size is a fraction of the frame's width so the
- * word keeps the same margin inside those outlines at every viewport.
+ * words keep the same margin inside those outlines at every viewport.
+ *
+ * Both lines live in one box that is centred on that point, so going from one
+ * word to two grows the block upward and downward equally and the anchor does
+ * not move.
  */
 .intro-vanish {
   position: absolute;
@@ -68,18 +72,23 @@
   font-family: Georgia, "Times New Roman", serif;
 
   /*
-   * Set uppercase and bold, which runs far wider than the lowercase word did
-   * at the same size — hence the smaller factor here, tuned so the word still
-   * clears the torso outlines rather than crossing them.
+   * Uppercase and bold run far wider than lowercase at the same size, hence the
+   * small factor here — tuned so the longer line clears the torso outlines
+   * rather than crossing them.
    */
   font-size: calc(var(--frame-w) * 0.0118);
   font-style: italic;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.05;
   letter-spacing: 0.02em;
+  text-align: center;
   text-transform: uppercase;
   cursor: pointer;
   translate: -50% -50%;
+}
+
+.intro-vanish span {
+  display: block;
 }
 
 .intro-vanish:hover,

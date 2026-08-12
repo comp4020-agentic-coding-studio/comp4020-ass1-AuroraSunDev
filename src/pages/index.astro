@@ -17,7 +17,23 @@ import "../styles/intro.css";
         fetchpriority="high"
         alt="A hand-drawn crowd packed edge to edge with hundreds of small smiling figures, one larger figure standing at the centre"
       />
-      <button type="button" class="intro-vanish" data-testid="vanish-trigger">vanish</button>
+      {/*
+        Two words on two lines, each its own block, so the pair stays centred on
+        the same point in the figure's torso however the viewport changes. The
+        whitespace between the spans is what keeps the accessible name "click me"
+        rather than "clickme".
+      */}
+      <button
+        type="button"
+        class="intro-vanish"
+        data-testid="vanish-trigger"
+        aria-describedby="intro-vanish-hint"
+      >
+        <span>click</span> <span>me</span>
+      </button>
+      <span id="intro-vanish-hint" class="sr-only">
+        Starts the sequence that makes everyone here disappear
+      </span>
     </div>
 
     <img

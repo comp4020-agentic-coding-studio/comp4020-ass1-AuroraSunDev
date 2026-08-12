@@ -214,11 +214,33 @@ describe("built page: the intro splash", () => {
   const base = (astroConfig.base ?? "/").replace(/\/$/, "");
   const doc = new JSDOM(readFileSync(resolve("dist/index.html"), "utf8")).window.document;
 
-  it("renders a vanish trigger the visitor can click", () => {
+  // Holds the contract rather than the wording, which has already changed once:
+  // a real button, a visible label set one line per span, a name that doesn't run
+  // the lines together, and a hint that actually resolves.
+  it("renders a trigger the visitor can click, labelled one line per span", () => {
     const trigger = doc.querySelector('[data-testid="vanish-trigger"]');
-    expect(trigger, "the intro needs a vanish trigger").toBeTruthy();
+    expect(trigger, "the intro needs a trigger to click").toBeTruthy();
     expect(trigger?.tagName).toBe("BUTTON");
-    expect(trigger?.textContent?.trim()).toBe("vanish");
+
+    const lines = [...(trigger?.querySelectorAll("span") ?? [])].map((span) =>
+      span.textContent?.trim(),
+    );
+    expect(lines.length, "the label should be one span per rendered line").toBeGreaterThan(0);
+    for (const line of lines) {
+      expect(line?.length, "a label line is empty").toBeGreaterThan(0);
+    }
+
+    // The spans are display:block, so losing the whitespace between them would
+    // look identical while making a screen reader announce "clickme".
+    const accessibleName = trigger?.textContent?.replace(/\s+/g, " ").trim();
+    expect(accessibleName, "the label lines run together in the accessible name").toBe(
+      lines.join(" "),
+    );
+
+    const hintId = trigger?.getAttribute("aria-describedby");
+    if (hintId) {
+      expect(doc.getElementById(hintId), `aria-describedby="${hintId}" points at nothing`).toBeTruthy();
+    }
   });
 
   it("renders the burst layer and the line the sequence ends on", () => {
