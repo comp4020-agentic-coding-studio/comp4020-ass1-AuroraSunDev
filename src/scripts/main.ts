@@ -1,11 +1,18 @@
 import { TIMELINE } from "../data/timeline";
 import { PLACES } from "../data/places";
-import type { Place, NycVisual, WallVisual, NuclearVisual, RainforestVisual } from "../data/places";
-import { getStateForPlace } from "../lib/interaction";
+import type { Place } from "../data/places";
+import {
+  FRAME_COUNT,
+  frameIndexFromSlider,
+  getStateForPlace,
+  sliderValueForStop,
+  stopIndexFromSlider,
+} from "../lib/interaction";
+import { sceneFrameUrl } from "../lib/asset-url";
 
 function bindTimeSlider(
   scope: string,
-  onChange: (stopIndex: number) => void,
+  onChange: (sliderValue: number) => void,
 ): HTMLInputElement | null {
   const slider = document.querySelector<HTMLInputElement>(
     `[data-testid="time-slider"][data-scope="${scope}"]`,
@@ -18,14 +25,15 @@ function bindTimeSlider(
   );
   if (!slider) return null;
   const update = () => {
-    const stopIndex = Number(slider.value);
+    const sliderValue = Number(slider.value);
+    const stopIndex = stopIndexFromSlider(sliderValue, TIMELINE.length);
     if (readout) readout.textContent = TIMELINE[stopIndex]?.label ?? "";
     if (tickList) {
       tickList.querySelectorAll("li").forEach((tick, index) => {
         tick.classList.toggle("is-active", index === stopIndex);
       });
     }
-    onChange(stopIndex);
+    onChange(sliderValue);
   };
   slider.addEventListener("input", update);
   update();
@@ -38,74 +46,11 @@ function findPlaceVisual(placeId: string, scope: string): HTMLElement | null {
   );
 }
 
-function updateNycVisual(root: Element, visual: NycVisual): void {
-  const water = root.querySelector<SVGRectElement>('[data-part="water"]');
-  const height = (visual.waterLevel / 100) * 140;
-  water?.setAttribute("y", String(140 - height));
-  water?.setAttribute("height", String(height));
-  root
-    .querySelector<SVGGElement>('[data-part="vegetation"]')
-    ?.setAttribute("opacity", String(visual.vegetation / 100));
-  root
-    .querySelector<SVGRectElement>('[data-part="damage"]')
-    ?.setAttribute("opacity", String((visual.structuralDamage / 100) * 0.6));
-}
-
-function updateWallVisual(root: Element, visual: WallVisual): void {
-  root
-    .querySelector<SVGGElement>('[data-part="vegetation"]')
-    ?.setAttribute("opacity", String(visual.vegetation / 100));
-  root
-    .querySelector<SVGGElement>('[data-part="erosion"]')
-    ?.setAttribute("opacity", String(visual.erosion / 100));
-  const gapCount = Math.min(4, Math.round(visual.missingSections / 25));
-  root.querySelectorAll<SVGRectElement>('[data-part="gap"]').forEach((gap, i) => {
-    gap.setAttribute("opacity", i < gapCount ? "1" : "0");
-  });
-}
-
-const STATUS_COLOR: Record<NuclearVisual["systemStatus"], string> = {
-  operating: "#2e9e44",
-  "auto-shutdown": "#e0b400",
-  "backup-power": "#e07b00",
-  "cooling-lost": "#c62828",
-  "long-term-containment": "#6b7280",
-};
-
-const STATUS_LABEL: Record<NuclearVisual["systemStatus"], string> = {
-  operating: "Operating",
-  "auto-shutdown": "Auto shutdown",
-  "backup-power": "Backup power",
-  "cooling-lost": "Cooling lost",
-  "long-term-containment": "Long-term containment",
-};
-
-function updateNuclearVisual(root: Element, visual: NuclearVisual): void {
-  root
-    .querySelector<SVGRectElement>('[data-part="periphery-weathering"]')
-    ?.setAttribute("opacity", String(visual.peripheralWeathering / 100));
-  root
-    .querySelector<SVGPathElement>('[data-part="containment-weathering"]')
-    ?.setAttribute("opacity", String((visual.containmentWeathering / 100) * 0.6));
-  root
-    .querySelector<SVGCircleElement>('[data-part="status-dot"]')
-    ?.setAttribute("fill", STATUS_COLOR[visual.systemStatus]);
-  const label = root.querySelector<SVGTextElement>('[data-part="status-label"]');
-  if (label) label.textContent = STATUS_LABEL[visual.systemStatus];
-}
-
-function updateRainforestVisual(root: Element, visual: RainforestVisual): void {
-  root
-    .querySelector<SVGPathElement>('[data-part="canopy-secondary"]')
-    ?.setAttribute("opacity", String(visual.canopyChange / 100));
-  root
-    .querySelector<SVGGElement>('[data-part="wildlife"]')
-    ?.setAttribute("opacity", String(visual.wildlifeVisibility / 100));
-}
-
-function renderVisual(place: Place, scope: string, stopIndex: number): void {
+function renderVisual(place: Place, scope: string, sliderValue: number): void {
   const container = findPlaceVisual(place.id, scope);
   if (!container) return;
+  const stopIndex = stopIndexFromSlider(sliderValue, TIMELINE.length);
+  const frameIndex = frameIndexFromSlider(sliderValue);
   const stop = getStateForPlace(place, stopIndex);
 
   const label = container.querySelector<HTMLElement>('[data-testid="place-visual-label"]');
@@ -115,26 +60,26 @@ function renderVisual(place: Place, scope: string, stopIndex: number): void {
   );
   if (description) description.textContent = stop.description;
 
-  switch (place.id) {
-    case "nyc":
-      updateNycVisual(container, stop.visual as NycVisual);
-      break;
-    case "wall":
-      updateWallVisual(container, stop.visual as WallVisual);
-      break;
-    case "nuclear":
-      updateNuclearVisual(container, stop.visual as NuclearVisual);
-      break;
-    case "rainforest":
-      updateRainforestVisual(container, stop.visual as RainforestVisual);
-      break;
+  const frame = container.querySelector<HTMLImageElement>('[data-testid="place-illustration"]');
+  if (frame) {
+    const src = sceneFrameUrl(place.id, frameIndex);
+    if (frame.src !== src) frame.src = src;
+  }
+}
+
+// Every scene frame is preloaded once at page load so dragging any slider
+// never waits on a network fetch — that's what keeps the drag feeling silky.
+for (const place of PLACES) {
+  for (let frameIndex = 1; frameIndex <= FRAME_COUNT; frameIndex++) {
+    const image = new Image();
+    image.src = sceneFrameUrl(place.id, frameIndex);
   }
 }
 
 // Individual sections: each place's own slider only ever updates that
 // place's own visual, never another section's.
 for (const place of PLACES) {
-  bindTimeSlider(place.id, (stopIndex) => renderVisual(place, place.id, stopIndex));
+  bindTimeSlider(place.id, (sliderValue) => renderVisual(place, place.id, sliderValue));
 }
 
 // Comparison section: the shared slider updates all 4 comparison visuals
@@ -143,9 +88,9 @@ for (const place of PLACES) {
 let compareStopIndex = 0;
 let isAutoAdvancing = false;
 
-const compareSlider = bindTimeSlider("compare", (stopIndex) => {
-  compareStopIndex = stopIndex;
-  for (const place of PLACES) renderVisual(place, "compare", stopIndex);
+const compareSlider = bindTimeSlider("compare", (sliderValue) => {
+  compareStopIndex = stopIndexFromSlider(sliderValue, TIMELINE.length);
+  for (const place of PLACES) renderVisual(place, "compare", sliderValue);
 });
 
 for (const checkbox of document.querySelectorAll<HTMLInputElement>(
@@ -183,7 +128,7 @@ function startPlayback(): void {
       return;
     }
     isAutoAdvancing = true;
-    compareSlider.value = String(next);
+    compareSlider.value = String(sliderValueForStop(next, TIMELINE.length));
     compareSlider.dispatchEvent(new Event("input"));
     isAutoAdvancing = false;
   }, 1200);

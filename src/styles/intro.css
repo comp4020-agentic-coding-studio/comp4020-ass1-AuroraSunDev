@@ -1,0 +1,235 @@
+/*
+ * The intro splash: a full-screen crowd you can click, a burst that expands
+ * from wherever you clicked, a white-out, one line of text, then the
+ * explainer. Nothing here animates until the visitor clicks — landing on the
+ * page costs no waiting.
+ */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+
+  /* the artwork's own paper tone, so no seam shows at odd aspect ratios */
+  background: #f7f4e9;
+}
+
+/*
+ * The crowd art is 1500x844 and the word "vanish" has to sit inside one
+ * particular figure's body. A plain object-fit: cover image won't do: cover
+ * crops by an amount that changes with the viewport, so a percentage-placed
+ * overlay would drift off the figure. This frame is instead sized to exactly
+ * the cover box — never smaller than the viewport, always the art's aspect
+ * ratio — and centred, so percentage coordinates inside it track the drawing
+ * at every viewport.
+ */
+.intro-frame {
+  --ar: 1.7773; /* 1500 / 844 */
+  --frame-w: max(100vw, calc(100dvh * var(--ar)));
+  --frame-h: max(100dvh, calc(100vw / var(--ar)));
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--frame-w);
+  height: var(--frame-h);
+  translate: -50% -50%;
+}
+
+.intro-frame picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.intro-crowd {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/*
+ * Placed on the blank body of the centre figure, measured off the rendered
+ * artwork: the torso's outlines sit at 45.9% and 51.4% across, so it centres
+ * on 48.66% and is 5.5% of the frame wide, and it spans 50% to 64.5% down,
+ * centring on 57.3%. The font size is a fraction of the frame's width so the
+ * word keeps the same margin inside those outlines at every viewport.
+ */
+.intro-vanish {
+  position: absolute;
+  top: 57.3%;
+  left: 48.66%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #1a1a1a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: calc(var(--frame-w) * 0.0152);
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  translate: -50% -50%;
+}
+
+.intro-vanish:hover,
+.intro-vanish:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* Breathes only while idle, so the word reads as the thing to click. */
+.intro:not([data-phase]) .intro-vanish {
+  animation: vanish-pulse 2.6s ease-in-out infinite;
+}
+
+/* Once clicked, the word does what it says. */
+.intro[data-phase] .intro-vanish {
+  animation: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 800ms ease-out;
+}
+
+@keyframes vanish-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/*
+ * The burst. Its source art carries a real alpha channel — a white star with a
+ * feathered glow on transparency — so it composites over the crowd on its own,
+ * with no blend mode involved. Keep it a PNG: flattening it to JPEG drops the
+ * alpha onto white and the whole rectangle turns opaque.
+ */
+.intro-boom {
+  position: fixed;
+  top: var(--boom-y, 50%);
+  left: var(--boom-x, 50%);
+  width: 90vmax;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+  scale: 0.02;
+  translate: -50% -50%;
+}
+
+.intro-boom.is-erupting {
+  opacity: 1;
+  animation: boom-grow var(--boom-duration, 10s) cubic-bezier(0.4, 0, 0.75, 0.5) forwards;
+}
+
+@keyframes boom-grow {
+  from {
+    scale: 0.02;
+  }
+
+  to {
+    scale: 4.2;
+  }
+}
+
+/* Guarantees a genuinely white screen once the burst has done its work. */
+.intro-whiteout {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 600ms ease-in;
+}
+
+.intro[data-phase="white"] .intro-whiteout,
+.intro[data-phase="line"] .intro-whiteout {
+  opacity: 1;
+}
+
+.intro-line {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  left: 0;
+  margin: 0;
+  padding: 0 1.5rem;
+  color: #1a1a1a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.35rem, 4.2vw, 3rem);
+  line-height: 1.2;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  translate: 0 -50%;
+}
+
+.intro[data-phase="line"] .intro-line {
+  animation: intro-line var(--line-duration, 2800ms) ease-in-out forwards;
+}
+
+@keyframes intro-line {
+  0% {
+    opacity: 0;
+  }
+
+  28% {
+    opacity: 1;
+  }
+
+  68% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/*
+ * Always reachable, and deliberately above every animation layer so it stays
+ * clickable mid-sequence. Dark text reads on both the cream art and the white.
+ */
+.intro-nav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 1.25rem 1.5rem;
+}
+
+/*
+ * The pill matters: without it this sits directly on dense line art and stops
+ * being readable. Near-white keeps it legible once the screen has gone white too.
+ */
+.intro-nav a {
+  display: inline-block;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  background: rgb(253 252 249 / 90%);
+  color: #4a4a4a;
+  font-family: system-ui, sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.intro-nav a:hover,
+.intro-nav a:focus-visible {
+  color: #0b5fff;
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro:not([data-phase]) .intro-vanish {
+    animation: none;
+  }
+
+  .intro-whiteout {
+    transition-duration: 200ms;
+  }
+}

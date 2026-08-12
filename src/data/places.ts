@@ -370,4 +370,4 @@ const rainforest: RainforestPlace = {
   ],
 };
 
-export const PLACES: readonly Place[] = [nyc, wall, nuclear, rainforest];
+export const PLACES: readonly Place[] = [nyc, nuclear, wall, rainforest];

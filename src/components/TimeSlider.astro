@@ -1,12 +1,12 @@
 ---
 import { TIMELINE } from "../data/timeline";
+import { SLIDER_RESOLUTION } from "../lib/interaction";
 
 interface Props {
   scope: string;
 }
 
 const { scope } = Astro.props;
-const max = TIMELINE.length - 1;
 ---
 
 <div class="time-slider">
@@ -15,7 +15,7 @@ const max = TIMELINE.length - 1;
     data-testid="time-slider"
     data-scope={scope}
     min="0"
-    max={max}
+    max={SLIDER_RESOLUTION}
     step="1"
     value="0"
     aria-label={`Time since humans disappear (${scope})`}

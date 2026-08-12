@@ -5,6 +5,8 @@
   --header-bg: #12181f;
   --header-fg: #f4f2ec;
   --rule: #e2ddd2;
+  --page-width: 78rem;
+  --wide: 64rem;
 }
 
 * {
@@ -20,7 +22,7 @@ body {
 }
 
 main {
-  max-width: 48rem;
+  max-width: var(--page-width);
   margin: 0 auto;
   padding: 0 2rem 4rem;
 }
@@ -59,7 +61,7 @@ button:focus-visible {
 .site-header-nav {
   display: flex;
   align-items: center;
-  max-width: 48rem;
+  max-width: var(--page-width);
   margin: 0 auto;
 }
 
@@ -78,9 +80,12 @@ button:focus-visible {
 
 /* Hero */
 
+/*
+ * Text only — the crowd artwork that used to sit here now carries the intro
+ * splash on the home page, and repeating it would blunt both.
+ */
 .hero {
   padding-block: 3.5rem 2.5rem;
-  border-bottom: 1px solid var(--rule);
 }
 
 .hero h1 {
@@ -92,6 +97,7 @@ button:focus-visible {
 }
 
 .hero-intro {
+  max-width: 46rem;
   margin: 0;
   color: var(--muted);
   font-size: 1.1rem;
@@ -105,10 +111,11 @@ button:focus-visible {
   border-top: 1px solid var(--rule);
 }
 
-.place-section:first-of-type {
-  padding-top: 0;
-  border-top: none;
-}
+/*
+ * No :first-of-type exception here: .hero is a <section> too, so
+ * `.place-section:first-of-type` can never match, and the rule above the first
+ * place section is the only divider under the hero.
+ */
 
 .place-section h2 {
   font-family: Georgia, "Times New Roman", serif;
@@ -128,11 +135,24 @@ button:focus-visible {
   margin-top: 2rem;
 }
 
+@media (width >= 64rem) {
+  .place-section {
+    display: grid;
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    gap: 3.5rem;
+    align-items: start;
+  }
+
+  .place-section-timeline {
+    margin-top: 0;
+  }
+}
+
 /* Time slider, shared by every section and the comparison section */
 
 .time-slider {
   width: 100%;
-  max-width: 28rem;
+  max-width: 34rem;
 }
 
 .time-slider input[type="range"] {
@@ -170,7 +190,8 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 32rem;
+  width: 100%;
+  max-width: 42rem;
   padding-top: 1rem;
   border-top: 4px solid var(--trajectory-color, #999);
 }
@@ -187,11 +208,12 @@ button:focus-visible {
   --trajectory-color: #1e8449;
 }
 
-.place-visual svg[data-testid="place-illustration"] {
+.place-visual-frame {
   display: block;
   width: 100%;
-  max-width: 30rem;
+  max-width: 100%;
   height: auto;
+  border-radius: 0.4rem;
 }
 
 .place-visual-label {
@@ -201,7 +223,7 @@ button:focus-visible {
 }
 
 .place-visual-description {
-  max-width: 26rem;
+  max-width: 34rem;
   margin: 0;
   color: var(--muted);
   font-size: 0.9rem;
@@ -211,7 +233,7 @@ button:focus-visible {
 /* Comparison section */
 
 .compare-section {
-  max-width: 60rem;
+  max-width: var(--page-width);
   margin: 3rem auto 0;
   padding-top: 2.5rem;
   border-top: 1px solid var(--rule);
@@ -302,7 +324,7 @@ button[data-testid="compare-play"][aria-pressed="true"] {
 }
 
 .site-footer-inner {
-  max-width: 48rem;
+  max-width: var(--page-width);
   margin: 0 auto;
 }
 
@@ -329,6 +351,12 @@ button[data-testid="compare-play"][aria-pressed="true"] {
   padding: 0;
   list-style: none;
   font-size: 0.85rem;
+}
+
+@media (width >= 64rem) {
+  .site-footer-sources {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .site-footer-sources a {

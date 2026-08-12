@@ -13,9 +13,11 @@ const initialStop = getStateForPlace(place, 0);
 ---
 
 <section class="place-section" data-testid="place-section" data-place-id={place.id}>
-  <h2>{place.name}</h2>
-  <p class="place-section-mechanism">{place.mechanism}</p>
-  <p class="place-section-contrast">{place.contrast}</p>
+  <div class="place-section-text">
+    <h2>{place.name}</h2>
+    <p class="place-section-mechanism">{place.mechanism}</p>
+    <p class="place-section-contrast">{place.contrast}</p>
+  </div>
   <div class="place-section-timeline">
     <PlaceVisual place={place} scope={place.id} stop={initialStop} />
     <TimeSlider scope={place.id} />

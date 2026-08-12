@@ -1,9 +1,6 @@
 ---
-import type { Place, NycVisual, WallVisual, NuclearVisual, RainforestVisual } from "../data/places";
-import NycVisualIllustration from "./visuals/NycVisual.astro";
-import WallVisualIllustration from "./visuals/WallVisual.astro";
-import NuclearVisualIllustration from "./visuals/NuclearVisual.astro";
-import RainforestVisualIllustration from "./visuals/RainforestVisual.astro";
+import type { Place } from "../data/places";
+import { sceneFrameUrl } from "../lib/asset-url";
 
 interface Props {
   place: Place;
@@ -12,6 +9,17 @@ interface Props {
 }
 
 const { place, scope, stop } = Astro.props;
+
+// Native dimensions of the optimized frames (public/scenes/<id>/*.jpg),
+// fixed at build time so the <img> can reserve its aspect ratio and never
+// shift the layout when a frame swaps.
+const FRAME_DIMENSIONS: Record<string, { width: number; height: number }> = {
+  nyc: { width: 1000, height: 666 },
+  wall: { width: 1000, height: 666 },
+  nuclear: { width: 1000, height: 562 },
+  rainforest: { width: 1000, height: 562 },
+};
+const dimensions = FRAME_DIMENSIONS[place.id] ?? { width: 1000, height: 666 };
 ---
 
 <div
@@ -21,10 +29,18 @@ const { place, scope, stop } = Astro.props;
   data-scope={scope}
   data-trajectory={place.trajectory}
 >
-  {place.id === "nyc" && <NycVisualIllustration visual={stop.visual as NycVisual} />}
-  {place.id === "wall" && <WallVisualIllustration visual={stop.visual as WallVisual} />}
-  {place.id === "nuclear" && <NuclearVisualIllustration visual={stop.visual as NuclearVisual} />}
-  {place.id === "rainforest" && <RainforestVisualIllustration visual={stop.visual as RainforestVisual} />}
+  <img
+    data-testid="place-illustration"
+    data-place-id={place.id}
+    data-scope={scope}
+    class="place-visual-frame"
+    src={sceneFrameUrl(place.id, 1)}
+    width={dimensions.width}
+    height={dimensions.height}
+    loading="eager"
+    decoding="async"
+    alt={`${place.name}: ${stop.label}`}
+  />
   <p class="place-visual-label" data-testid="place-visual-label">{stop.label}</p>
   <p class="place-visual-description" data-testid="place-visual-description">{stop.description}</p>
 </div>

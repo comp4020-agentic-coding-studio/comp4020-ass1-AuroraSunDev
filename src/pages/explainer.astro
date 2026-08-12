@@ -1,0 +1,74 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PlaceSection from "../components/PlaceSection.astro";
+import PlaceVisual from "../components/PlaceVisual.astro";
+import TimeSlider from "../components/TimeSlider.astro";
+import { PLACES } from "../data/places";
+import { SOURCES } from "../data/sources";
+import { getStateForPlace } from "../lib/interaction";
+---
+
+<Layout title="When Humans Vanish">
+  <header class="site-header">
+    <nav aria-label="Primary" class="site-header-nav">
+      <a href="./" class="site-header-brand">When Humans Vanish</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>When Humans Vanish</h1>
+      <p data-testid="intro" class="hero-intro">
+        Human absence doesn't affect every place equally. The more a place's
+        current condition depends on continuous human maintenance, the faster
+        — and more differently — it responds once that maintenance stops. Scrub
+        each place's own timeline below to see how, then compare any subset of
+        them at the same moment in time.
+      </p>
+    </section>
+
+    {PLACES.map((place) => <PlaceSection place={place} />)}
+
+    <section class="compare-section" data-testid="compare-section">
+      <h2>Compare places</h2>
+      <p>
+        Choose any subset of places and move through the same span of time
+        together.
+      </p>
+      <fieldset>
+        <legend>Compare places</legend>
+        {PLACES.map((place) => (
+          <label>
+            <input type="checkbox" data-testid="compare-toggle" data-place-id={place.id} checked />
+            {place.name}
+          </label>
+        ))}
+      </fieldset>
+      <div class="compare-grid" data-testid="compare-grid">
+        {PLACES.map((place) => (
+          <PlaceVisual place={place} scope="compare" stop={getStateForPlace(place, 0)} />
+        ))}
+      </div>
+      <div class="compare-section-controls">
+        <TimeSlider scope="compare" />
+        <button type="button" data-testid="compare-play" aria-pressed="false">
+          Play
+        </button>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <p class="site-footer-note">
+        Every stop above is grounded in a real source or marked as a reasoned
+        inference, never presented as more certain than it is.
+      </p>
+      <h2 class="site-footer-heading">Sources</h2>
+      <ul class="site-footer-sources">
+        {Object.values(SOURCES).map((source) => (
+          <li><a href={source.url}>{source.title}</a></li>
+        ))}
+      </ul>
+    </div>
+  </footer>
+  <script src="../scripts/main.ts"></script>
+</Layout>
