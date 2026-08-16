@@ -144,40 +144,59 @@ import { assetUrl } from "../lib/asset-url";
       and the words below are unaffected by it.
     */}
     <div class="globe-approach" data-testid="globe-approach" aria-hidden="true">
-      <div class="globe-approach-stars"></div>
+      <div class="globe-stars" data-fade="in"></div>
     </div>
 
-    <div class="globe-stage">
-      <div class="globe-space" aria-hidden="true"></div>
+    {/*
+      The track is what the stage is pinned against: its height is the length
+      of the pinned run, and nothing else. Keeping it separate from the section
+      is what lets the tail below exist at all — with the stage sticky directly
+      inside the section, anything placed after it would have been overlapped
+      by the still-pinned stage instead of following it.
+    */}
+    <div class="globe-track" data-testid="globe-track">
+      <div class="globe-stage">
+        <div class="globe-stars" aria-hidden="true"></div>
 
-      <div class="globe" data-testid="globe" aria-hidden="true">
-        {(["winter", "spring", "summer", "autumn"] as const).map((season) => (
-          <div
-            class="globe-map"
-            data-season={season}
-            style={`background-image: url(${assetUrl(`globe/${season}.jpg`)})`}
-          />
-        ))}
-        <div class="globe-shade"></div>
-      </div>
+        <div class="globe" data-testid="globe" aria-hidden="true">
+          {(["winter", "spring", "summer", "autumn"] as const).map((season) => (
+            <div
+              class="globe-map"
+              data-season={season}
+              style={`background-image: url(${assetUrl(`globe/${season}.jpg`)})`}
+            />
+          ))}
+          <div class="globe-shade"></div>
+        </div>
 
-      <div class="globe-copy" data-testid="closing-question">
-        <h2>A question, not a conclusion</h2>
-        <p>
-          In 4.5 billion years, countless species have appeared on this planet
-          and countless have gone. What do we — everything we make, everything
-          we live for — actually mean to something like Earth?
-        </p>
-        <p>
-          Four places that depend on us to completely different degrees, run
-          forward five hundred years, and arrive at much the same place. Held
-          against 4.5 billion years, maybe the honest response is to put our
-          arrogance away.
-        </p>
-        <p class="globe-copy-invite">
-          If it leaves you with something different, I'd like to hear it.
-        </p>
+        <div class="globe-copy" data-testid="closing-question">
+          <h2>A question, not a conclusion</h2>
+          <p>
+            In 4.5 billion years, countless species have appeared on this
+            planet and countless have gone. What do we — everything we make,
+            everything we live for — actually mean to something like Earth?
+          </p>
+          <p>
+            Four places that depend on us to completely different degrees, run
+            forward five hundred years, and arrive at much the same place. Held
+            against 4.5 billion years, maybe the honest response is to put our
+            arrogance away.
+          </p>
+          <p class="globe-copy-invite">
+            If it leaves you with something different, I'd like to hear it.
+          </p>
+        </div>
       </div>
+    </div>
+
+    {/*
+      Open sky after the words. Without it the stage unpins straight onto the
+      footer, and the page goes from deep space to a teal bar in one scroll —
+      the same abruptness the approach above was added to fix, just at the
+      other end.
+    */}
+    <div class="globe-tail" data-testid="globe-tail" aria-hidden="true">
+      <div class="globe-stars"></div>
     </div>
   </section>
   <footer class="site-footer">

@@ -15,7 +15,7 @@
 // only read the position, never fight it.
 
 const section = document.querySelector<HTMLElement>('[data-testid="globe-section"]');
-const approach = document.querySelector<HTMLElement>('[data-testid="globe-approach"]');
+const track = document.querySelector<HTMLElement>('[data-testid="globe-track"]');
 const globe = document.querySelector<HTMLElement>('[data-testid="globe"]');
 const layers = [...document.querySelectorAll<HTMLElement>(".globe-map")];
 
@@ -25,7 +25,7 @@ function clamp(value: number, low: number, high: number): number {
   return Math.min(high, Math.max(low, value));
 }
 
-if (section && globe && layers.length > 0) {
+if (section && track && globe && layers.length > 0) {
   const SEASONS = layers.length;
 
   // Turns per second, and the small one is the *end* of the range, not the
@@ -34,6 +34,9 @@ if (section && globe && layers.length > 0) {
   // the frame reads as a loading spinner.
   const SPIN_FAR = 0.42;
   const SPIN_NEAR = 0.03;
+
+  // How much of a screen before the track pins the globe starts surfacing in.
+  const EARLY = 0.3;
 
   let progress = 0;
   let spin = 0;
@@ -47,14 +50,18 @@ if (section && globe && layers.length > 0) {
     // would overwrite that with 0 and take the globe's opacity down with it.
     if (reduceMotion.matches) return;
 
-    const rect = section!.getBoundingClientRect();
-    // The approach band is scrolled through before the stage pins, so it is
-    // subtracted from both ends: progress is 0 at the moment the stage takes
-    // the viewport, not at the top of the section. Measured off the element
-    // rather than repeating the height here, so changing it in CSS is enough.
-    const lead = approach?.offsetHeight ?? 0;
-    const travel = rect.height - lead - window.innerHeight;
-    progress = travel > 0 ? clamp((-rect.top - lead) / travel, 0, 1) : 0;
+    // Measured against the track, whose height is the pinned run and nothing
+    // else, so changing any of the three bands in CSS needs no change here.
+    //
+    // EARLY starts the clock before the track reaches the top of the screen —
+    // the last of the approach is still going dark while the globe is already
+    // surfacing from the bottom of the frame. The two overlap on purpose: made
+    // to queue, the page sat on a finished empty sky waiting for the reader to
+    // scroll again.
+    const rect = track!.getBoundingClientRect();
+    const early = window.innerHeight * EARLY;
+    const travel = rect.height - window.innerHeight + early;
+    progress = travel > 0 ? clamp((early - rect.top) / travel, 0, 1) : 0;
     section!.style.setProperty("--globe-progress", progress.toFixed(4));
   }
 

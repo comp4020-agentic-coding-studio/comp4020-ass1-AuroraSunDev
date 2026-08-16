@@ -231,8 +231,22 @@ button:focus-visible {
     align-items: start;
   }
 
+  /*
+   * Pushed to the right edge rather than floating in the middle of its column.
+   * The text on the left starts at the page margin, and the picture opposite it
+   * was stopping ~76px short of the other one, which reads as an accident
+   * rather than a choice.
+   *
+   * Right-aligning the *items* was the obvious fix and the wrong one: the
+   * slider is narrower than the picture, so it would have hung off the
+   * picture's right edge with all the slack on its left. Pushing the whole
+   * column instead keeps the slider centred under the picture — they are one
+   * object — while the picture's right edge lands on the margin.
+   */
   .place-section-timeline {
+    max-width: 42rem;
     margin-top: 0;
+    margin-left: auto;
   }
 }
 
@@ -534,7 +548,6 @@ button:focus-visible {
   --space: #050f2b;
 
   position: relative;
-  height: 390vh;
   background: var(--space);
 }
 
@@ -547,27 +560,35 @@ button:focus-visible {
  */
 .globe-approach {
   position: relative;
-  height: 90vh;
+  height: 58vh;
+
+  /* Full dark by 76%, not at the very bottom: the last quarter of the band is
+     solid space, which is the window the globe starts surfacing in. */
   background: linear-gradient(
     to bottom,
     var(--page-bg) 0%,
-    #d3ecf6 14%,
-    #8fb9d2 34%,
-    #3f6c98 56%,
-    #14305e 76%,
-    var(--space) 94%
+    #cfe9f5 10%,
+    #86b3cf 26%,
+    #35608e 45%,
+    #122c58 60%,
+    var(--space) 76%
   );
 }
 
 /*
- * The same stars as the stage below, but only where the sky has gone dark
- * enough to hold them — masked in over the lower half, so they arrive with the
- * darkness rather than switching on when the stage takes over.
+ * The pinned run. Its height minus one viewport is exactly how far the stage
+ * travels while stuck, so this number alone controls how much scrolling the
+ * growth takes — globe.ts reads it off the element rather than repeating it.
  */
-.globe-approach-stars {
-  position: absolute;
-  inset: 0;
-  mask-image: linear-gradient(to bottom, transparent 30%, #000 88%);
+.globe-track {
+  position: relative;
+  height: 220vh;
+}
+
+/* Sky after the words, so the section doesn't end on the footer's edge. */
+.globe-tail {
+  position: relative;
+  height: 52vh;
 }
 
 /*
@@ -598,8 +619,7 @@ button:focus-visible {
  * The three tile sizes are deliberately not multiples of each other, so the
  * layers never line up into a grid you can see.
  */
-.globe-space,
-.globe-approach-stars {
+.globe-stars {
   position: absolute;
   inset: 0;
   background-image:
@@ -658,17 +678,14 @@ button:focus-visible {
   background-size: 760px 620px;
 }
 
-.globe-space::before,
-.globe-approach-stars::before,
-.globe-space::after,
-.globe-approach-stars::after {
+.globe-stars::before,
+.globe-stars::after {
   content: "";
   position: absolute;
   inset: 0;
 }
 
-.globe-space::before,
-.globe-approach-stars::before {
+.globe-stars::before {
   background-image:
     radial-gradient(1px 1px at 18.1% 72.4%, rgb(255 214 205 / 90%), transparent 60%),
     radial-gradient(2px 2px at 56.9% 41.8%, rgb(168 200 255 / 92%), transparent 60%),
@@ -699,8 +716,7 @@ button:focus-visible {
   background-size: 1190px 940px;
 }
 
-.globe-space::after,
-.globe-approach-stars::after {
+.globe-stars::after {
   background-image:
     radial-gradient(3px 3px at 30.3% 39.3%, rgb(255 255 255 / 97%), transparent 55%),
     radial-gradient(3px 3px at 13.1% 13.7%, rgb(198 220 255 / 98%), transparent 55%),
@@ -714,6 +730,14 @@ button:focus-visible {
     radial-gradient(2px 2px at 59.0% 15.3%, rgb(255 255 255 / 96%), transparent 55%),
     radial-gradient(3px 3px at 47.6% 46.2%, rgb(255 255 255 / 98%), transparent 55%);
   background-size: 1630px 1310px;
+}
+
+/*
+ * Only where the sky has gone dark enough to hold them, so the stars arrive
+ * with the darkness in the approach rather than switching on all at once.
+ */
+.globe-stars[data-fade="in"] {
+  mask-image: linear-gradient(to bottom, transparent 26%, #000 74%);
 }
 
 /*
@@ -810,15 +834,20 @@ button:focus-visible {
  * is concerned, so it goes too.
  */
 @media (prefers-reduced-motion: reduce) {
-  .globe-section {
+  /* The colour change is worth keeping — it is a gradient, not motion — but a
+     whole screen of it is only there to be scrolled through, so both bands
+     shrink to something that does the same job in one glance, and the track
+     collapses onto its own contents. */
+  .globe-approach {
+    height: 9rem;
+  }
+
+  .globe-track {
     height: auto;
   }
 
-  /* The colour change is worth keeping — it is a gradient, not motion — but a
-     whole screen of it is only there to be scrolled through, so it shrinks to
-     a band that does the same job in one glance. */
-  .globe-approach {
-    height: 9rem;
+  .globe-tail {
+    height: 5rem;
   }
 
   .globe-stage {
