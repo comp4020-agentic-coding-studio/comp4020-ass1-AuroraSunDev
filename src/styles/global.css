@@ -123,9 +123,15 @@ button:focus-visible {
 }
 
 @media (width >= 52rem) {
+  /*
+   * The globe column is sized to the globe, not to a share of the page. At
+   * this size a proportional column would have left it adrift in the middle of
+   * a few hundred empty pixels; `auto` puts it on the left margin where the
+   * text used to start, and the words take everything else.
+   */
   .hero {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 3rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 2.5rem;
     align-items: center;
   }
 
@@ -156,9 +162,10 @@ button:focus-visible {
 }
 
 /*
- * A still Earth. It is capped in rem as well as vw so it stays an opening
- * image on a wide monitor instead of growing into a poster, and centred in its
- * cell so the two columns balance whichever is taller.
+ * A still Earth, at the height of the paragraph it sits beside — an accent
+ * next to the opening words rather than a picture competing with them. A fixed
+ * size rather than a viewport fraction: it is already small enough not to
+ * crowd a phone, and scaling it down further would lose the continents.
  */
 .hero-globe {
   display: grid;
@@ -167,15 +174,25 @@ button:focus-visible {
 
 .hero-globe-body {
   position: relative;
-  width: min(74vw, 20rem);
+  width: 6.5rem;
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: 50%;
 
-  /* The same atmosphere as the epilogue globe, sized for this one. */
+  /*
+   * The shading is shared with the epilogue globe, and its inner shadow is the
+   * one part of it written in pixels rather than percentages — at 320px that
+   * read as a terminator, at this size it would have swallowed a third of the
+   * sphere. Set here as the same fraction of the diameter (~9%) rather than as
+   * a descendant override, so there is no rule ordering to get wrong.
+   */
+  --shade-blur: 10px;
+  --shade-spread: 2px;
+
+  /* The same atmosphere as the epilogue globe, in proportion to this one. */
   box-shadow:
-    0 0 34px rgb(120 190 255 / 40%),
-    0 0 12px rgb(190 225 255 / 32%);
+    0 0 12px rgb(120 190 255 / 40%),
+    0 0 5px rgb(190 225 255 / 32%);
 }
 
 /*
@@ -789,7 +806,8 @@ button:focus-visible {
   background:
     radial-gradient(circle at 32% 28%, rgb(255 255 255 / 22%), transparent 46%),
     radial-gradient(circle at 68% 72%, rgb(0 6 20 / 78%), transparent 62%);
-  box-shadow: inset 0 0 30px 6px rgb(0 6 20 / 55%);
+  box-shadow: inset 0 0 var(--shade-blur, 30px) var(--shade-spread, 6px)
+    rgb(0 6 20 / 55%);
 }
 
 /*
