@@ -10,17 +10,17 @@
   inset: 0;
   overflow: hidden;
 
-  /* the artwork's own sky, sampled from its edges, so no seam shows at odd
-     aspect ratios — it was cream until the drawing was replaced by one set
-     against a blue sky */
-  background: #1a7bc8;
+  /* sampled from the photo's own edges, so no seam shows at odd aspect ratios.
+     Re-sample this when the photo changes: it has been cream, then sky blue,
+     and is now the dusk of a city street. */
+  background: #2d2821;
 }
 
 /*
- * The crowd art is 1672x941 — its native size, which is the sharpness ceiling:
- * a 1920-wide frame already upscales it, so never downscale the source. The
- * word "vanish" has to sit inside one particular figure's body, and a plain
- * object-fit: cover image won't do: cover
+ * The crowd photo is 1376x768 — its native size, which is the sharpness
+ * ceiling: a 1920-wide frame already upscales it, so never downscale the
+ * source. The button has to sit on one particular person in the crowd, and a
+ * plain object-fit: cover image won't do: cover
  * crops by an amount that changes with the viewport, so a percentage-placed
  * overlay would drift off the figure. This frame is instead sized to exactly
  * the cover box — never smaller than the viewport, always the art's aspect
@@ -28,7 +28,7 @@
  * at every viewport.
  */
 .intro-frame {
-  --ar: 1.7768; /* 1672 / 941 */
+  --ar: 1.7917; /* 1376 / 768 */
   --frame-w: max(100vw, calc(100dvh * var(--ar)));
   --frame-h: max(100dvh, calc(100vw / var(--ar)));
 
@@ -53,80 +53,100 @@
 }
 
 /*
- * Placed on the blank body of the centre figure. These numbers are measured off
- * the artwork rather than judged by eye — scanning the image for the white run
- * down its middle finds the head at 30–39.4% and the torso at 44.2–51.9% down,
- * spanning 47.67% to 51.32% across. So the anchor is its centre, 49.49% / 48.05%.
+ * The call to action, sitting on the one person in the crowd who is looking
+ * back at you. Coordinates are measured off the photo rather than judged by
+ * eye: her face runs roughly 45-53% down, and the clear front of her jacket
+ * below it spans 46.4-54.4% across and 60-73% down. The button centres on
+ * 50.3% / 68%, which puts it on her coat and leaves her face uncovered.
  *
- * Re-measure this whenever the artwork is replaced. It has changed once
- * already, and the old anchor left the words sitting below the figure on other
- * people's heads while still looking deliberate.
+ * Re-measure this whenever the photo is replaced. It has already happened
+ * twice, and a stale anchor does not look broken — it looks deliberate, just
+ * placed on the wrong person.
  *
- * The torso is only 3.65% of the frame wide — a third narrower than the
- * previous drawing's — which is what sets the font size below.
- *
- * Both lines live in one box centred on that point, so going from one word to
- * two grows the block up and down equally and the anchor does not move.
+ * Sizing is a fraction of the frame width, not a fixed px, so the button keeps
+ * the same relationship to her at every viewport instead of swelling on a
+ * phone. It is deliberately small: it has to read as a control, not as a
+ * banner pasted over the picture.
  */
 .intro-vanish {
   position: absolute;
-  top: 48.05%;
-  left: 49.49%;
-  padding: 0;
+  top: 68%;
+  left: 50.3%;
+  padding: 0.62em 1.35em;
   border: 0;
-  background: none;
-  color: #1a1a1a;
-  font-family: Georgia, "Times New Roman", serif;
-
-  /*
-   * Uppercase and bold run far wider than lowercase at the same size, hence the
-   * small factor here — tuned by measuring the rendered label against the torso
-   * rather than by eye. At this size "CLICK" is 3.14% of the frame wide inside
-   * a 3.65% torso, so it clears the outlines with a margin on both sides.
-   */
-  font-size: calc(var(--frame-w) * 0.009);
-  font-style: italic;
+  border-radius: 999px;
+  background: #e0242b;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: calc(var(--frame-w) * 0.0115);
   font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
+  line-height: 1;
+  letter-spacing: 0.09em;
   text-align: center;
   text-transform: uppercase;
+  white-space: nowrap;
   cursor: pointer;
+  box-shadow:
+    0 0 10px 2px rgb(255 45 55 / 50%),
+    0 2px 10px rgb(0 0 0 / 45%);
   translate: -50% -50%;
 }
 
-.intro-vanish span {
-  display: block;
+.intro-vanish:hover {
+  background: #ff3a41;
+  scale: 1.06;
 }
 
-.intro-vanish:hover,
+/* The page accent is blue on a dark photo; white reads far better here. */
 .intro-vanish:focus-visible {
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
+  outline: 3px solid #fff;
+  outline-offset: 3px;
 }
 
-/* Breathes only while idle, so the word reads as the thing to click. */
+/*
+ * Two jobs in one animation: a ring that expands out of the edge and fades,
+ * which is what catches the eye in peripheral vision, and a glow that breathes
+ * underneath it so the button never looks flat. The old label pulsed its
+ * opacity instead, which is wrong for a button — a control that fades halfway
+ * out reads as disabled.
+ *
+ * The resting glow lives on the base rule rather than in the keyframes, so
+ * that switching this animation off (reduced motion, below) leaves a lit red
+ * button rather than a flat one.
+ */
 .intro:not([data-phase]) .intro-vanish {
-  animation: vanish-pulse 2.6s ease-in-out infinite;
+  animation: push-glow 1.9s ease-out infinite;
 }
 
-/* Once clicked, the word does what it says. */
+@keyframes push-glow {
+  0% {
+    box-shadow:
+      0 0 0 0 rgb(255 45 55 / 70%),
+      0 0 10px 2px rgb(255 45 55 / 50%),
+      0 2px 10px rgb(0 0 0 / 45%);
+  }
+
+  70% {
+    box-shadow:
+      0 0 0 1.15em rgb(255 45 55 / 0%),
+      0 0 22px 7px rgb(255 45 55 / 80%),
+      0 2px 10px rgb(0 0 0 / 45%);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 0 rgb(255 45 55 / 0%),
+      0 0 10px 2px rgb(255 45 55 / 50%),
+      0 2px 10px rgb(0 0 0 / 45%);
+  }
+}
+
+/* Once pressed, the button does what it says. */
 .intro[data-phase] .intro-vanish {
   animation: none;
   opacity: 0;
   pointer-events: none;
   transition: opacity 800ms ease-out;
-}
-
-@keyframes vanish-pulse {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-
-  50% {
-    opacity: 1;
-  }
 }
 
 /*

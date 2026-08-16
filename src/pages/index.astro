@@ -12,16 +12,14 @@ import "../styles/intro.css";
       <img
         class="intro-crowd"
         src={assetUrl("intro/crowd.jpg")}
-        width="1672"
-        height="941"
+        width="1376"
+        height="768"
         fetchpriority="high"
-        alt="A hand-drawn crowd packed edge to edge with hundreds of small smiling figures, one larger figure standing at the centre"
+        alt="A dense city crowd filling a street from edge to edge, hundreds of people walking, one woman near the centre looking straight ahead"
       />
       {/*
-        Two words on two lines, each its own block, so the pair stays centred on
-        the same point in the figure's torso however the viewport changes. The
-        whitespace between the spans is what keeps the accessible name "click me"
-        rather than "clickme".
+        One line in one span. The photo is busy enough that two stacked words
+        read as noise in it, where a single pill reads as a control.
       */}
       <button
         type="button"
@@ -29,7 +27,7 @@ import "../styles/intro.css";
         data-testid="vanish-trigger"
         aria-describedby="intro-vanish-hint"
       >
-        <span>click</span> <span>me</span>
+        <span>Push me</span>
       </button>
       <span id="intro-vanish-hint" class="sr-only">
         Starts the sequence that makes everyone here disappear
