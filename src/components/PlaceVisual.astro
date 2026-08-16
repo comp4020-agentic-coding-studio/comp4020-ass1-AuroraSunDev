@@ -6,9 +6,17 @@ interface Props {
   place: Place;
   scope: string;
   stop: Place["stops"][number];
+  /*
+   * "label" drops the sentence under the picture and keeps the short heading.
+   * The comparison grid uses it: the same sentence has already been read a few
+   * inches above, and four copies of it side by side turn a row of pictures
+   * into a wall of text. A prop rather than a check on `scope`, so the
+   * component isn't holding an opinion about who is rendering it.
+   */
+  caption?: "full" | "label";
 }
 
-const { place, scope, stop } = Astro.props;
+const { place, scope, stop, caption = "full" } = Astro.props;
 
 // Native dimensions of the optimized frames (public/scenes/<id>/*.jpg),
 // fixed at build time so the <img> can reserve its aspect ratio and never
@@ -55,12 +63,16 @@ const dimensions = FRAME_DIMENSIONS[place.id] ?? { width: 1000, height: 666 };
       <p class="place-visual-label place-visual-sizer" aria-hidden="true">{sizer.label}</p>
     ))}
   </div>
-  <div class="place-visual-slot">
-    <p class="place-visual-description" data-testid="place-visual-description">{stop.description}</p>
-    {place.stops.map((sizer) => (
-      <p class="place-visual-description place-visual-sizer" aria-hidden="true">
-        {sizer.description}
+  {caption === "full" && (
+    <div class="place-visual-slot">
+      <p class="place-visual-description" data-testid="place-visual-description">
+        {stop.description}
       </p>
-    ))}
-  </div>
+      {place.stops.map((sizer) => (
+        <p class="place-visual-description place-visual-sizer" aria-hidden="true">
+          {sizer.description}
+        </p>
+      ))}
+    </div>
+  )}
 </div>

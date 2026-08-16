@@ -156,6 +156,28 @@ describe("built page: the interaction is actually wired to the data", () => {
     }
   });
 
+  it("captions the comparison grid with the short label only", () => {
+    // The sentence under each picture has already been read in that place's own
+    // section a few inches above, and four of them side by side turn a row of
+    // pictures into a wall of text. The label still has to be there and still
+    // has to come from the same data — this is a narrower caption, not a
+    // disconnected one.
+    for (const place of PLACES) {
+      const container = doc.querySelector(
+        `[data-testid="place-visual"][data-place-id="${place.id}"][data-scope="compare"]`,
+      );
+      expect(container, `missing compare visual for "${place.id}"`).toBeTruthy();
+
+      expect(
+        container?.querySelector('[data-testid="place-visual-label"]')?.textContent?.trim(),
+      ).toBe(getStateForPlace(place, 0).label);
+      expect(
+        container?.querySelector('[data-testid="place-visual-description"]'),
+        `"${place.id}" still renders a description in the comparison grid`,
+      ).toBeNull();
+    }
+  });
+
   it("renders one compare-toggle checkbox per place", () => {
     const checkboxes = doc.querySelectorAll<HTMLInputElement>('[data-testid="compare-toggle"]');
     expect(checkboxes).toHaveLength(PLACES.length);

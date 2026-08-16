@@ -479,12 +479,9 @@ button:focus-visible {
   object-fit: cover;
 }
 
+/* The grid renders labels only, so there is no description rule here to match. */
 .compare-grid .place-visual-label {
   font-size: 0.9rem;
-}
-
-.compare-grid .place-visual-description {
-  font-size: 0.8rem;
 }
 
 .compare-section-controls {
