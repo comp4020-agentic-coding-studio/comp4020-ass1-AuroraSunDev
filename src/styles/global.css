@@ -614,14 +614,14 @@ button:focus-visible {
 
 /*
  * Sky after the words, so the section doesn't end on the footer's edge.
- * Written as the fraction minus a flat 100px rather than as a smaller
- * fraction, because that is the adjustment that was asked for: it takes the
- * same 100px off every viewport instead of taking more off tall screens and
- * less off short ones.
+ * Written as the fraction minus a flat amount rather than as a smaller
+ * fraction, because that is the adjustment that keeps being asked for: it
+ * takes the same number of pixels off every viewport instead of taking more
+ * off tall screens and less off short ones. Trimmed twice, 100px each time.
  */
 .globe-tail {
   position: relative;
-  height: calc(52vh - 100px);
+  height: calc(52vh - 200px);
 }
 
 /*
