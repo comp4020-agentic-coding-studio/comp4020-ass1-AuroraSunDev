@@ -1011,6 +1011,7 @@ button:focus-visible {
  * them would imply the globe imagery is evidence for something.
  */
 .site-footer-credit {
+  max-width: 46rem;
   margin: 1.75rem 0 0;
 
   /* Was #a8d6e6, which measured 4.10:1 on the footer — under AA for text this
@@ -1018,6 +1019,11 @@ button:focus-visible {
      quietest line in the footer. */
   color: #b8e2f2;
   font-size: 0.8rem;
+}
+
+/* Two credits read as one block, not as two separate afterthoughts. */
+.site-footer-credit + .site-footer-credit {
+  margin-top: 0.6rem;
 }
 
 .site-footer-sources a,

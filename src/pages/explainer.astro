@@ -216,8 +216,22 @@ import { assetUrl } from "../lib/asset-url";
           <li><a href={source.url}>{source.title}</a></li>
         ))}
       </ul>
+      {/*
+        Said plainly and before the globe credit, because it is the one a
+        reader could otherwise get wrong. The day-1 frames in particular look
+        documentary, and nothing else on the page tells them otherwise — while
+        the note above promises that everything here is either sourced or
+        marked as inference. Images were the gap in that promise.
+      */}
       <p class="site-footer-credit">
-        Globe imagery: four monthly composites from{" "}
+        The images of all four places are generated, not photographed — the
+        timeline frames with ChatGPT, the opening crowd with Gemini. They
+        illustrate the states described above; they are not a record of them.
+        The sources listed here are what those states rest on.
+      </p>
+      <p class="site-footer-credit">
+        Globe imagery is the exception, and is real data: four monthly
+        composites from{" "}
         <a href="https://earthobservatory.nasa.gov/features/BlueMarble">
           Blue Marble: Next Generation
         </a>{" "}
