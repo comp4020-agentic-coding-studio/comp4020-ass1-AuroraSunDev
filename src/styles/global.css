@@ -5,20 +5,37 @@
  *
  * Tuned bright rather than deep — the page should feel like daylight on water,
  * not the bottom of it. Each value is the lightest one that still clears its
- * contrast bar, which is what stops "brighter" turning into "washed out":
- * accent 4.6:1 on the page and 4.8:1 on white, ink 12.9:1, header text 6.1:1,
- * footer body 5.2:1. --accent-bright is past the text bar on purpose and is
- * only ever used for graphics, where the bar is 3:1.
+ * contrast bar, which is what stops "brighter" turning into "washed out".
+ *
+ * Both of the logo's colours carry weight, and which one appears where follows
+ * the drawing: BLUE IS WATER, so it is everything you touch — links, sliders,
+ * checkboxes, buttons. GREEN IS LAND, so it is the ground the content stands
+ * on — the headings, and the band across the top and bottom of the page, which
+ * runs ocean to continent the way the icon does.
+ *
+ * The header and footer are a gradient, so their text was checked against
+ * eleven points along the ramp rather than against either end: the worst case
+ * is 4.9:1 for footer body and 5.8:1 for the header.
  */
 :root {
   --ink: #12333d; /* cool and dark enough to read, not black */
   --muted: #42626c;
+
+  /* water — interaction */
   --accent: #0d7ba4; /* the brightest ocean blue that still carries text at 4.6:1 */
   --accent-bright: #22b0e0; /* the logo's blue at full strength, graphics only */
   --accent-light: #a9ebff; /* for use on the header and footer */
-  --header-bg: #0a6885; /* open water, not deep water */
+
+  /* land — content */
+  --land: #2b7536; /* the logo's green, dark enough for a heading at 5.5:1 */
+  --land-bright: #5cb32f; /* full-strength leaf, graphics only */
+
+  /* surfaces */
+  --header-bg: #0a6885; /* the blue end, and the solid fallback */
+  --header-band: linear-gradient(105deg, #0a6885 0%, #14705a 50%, #1d6e31 100%);
   --header-fg: #f2fdff;
   --rule: #cdeef7;
+  --rule-band: linear-gradient(90deg, #a8dcef 0%, #bfe6cf 55%, #b9e4b0 100%);
   --page-bg: #f0fdff; /* the palest of the logo's cyans */
   --page-width: 78rem;
   --wide: 64rem;
@@ -70,6 +87,7 @@ button:focus-visible {
 .site-header {
   padding: 1.1rem 2rem;
   background: var(--header-bg);
+  background-image: var(--header-band);
   color: var(--header-fg);
 }
 
@@ -120,10 +138,15 @@ button:focus-visible {
 
 /* Place sections */
 
+/*
+ * The dividers run the same way as the band at the top of the page: blue on the
+ * left, green on the right. A gradient can't be a border-color, so it is a
+ * 2px background strip pinned to the top edge instead.
+ */
 .place-section {
   margin-block: 3rem;
   padding-block: 2.5rem;
-  border-top: 1px solid var(--rule);
+  background: var(--rule-band) top left / 100% 2px no-repeat;
 }
 
 /*
@@ -133,6 +156,7 @@ button:focus-visible {
  */
 
 .place-section h2 {
+  color: var(--land);
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.6rem;
 }
@@ -297,10 +321,11 @@ button:focus-visible {
   max-width: var(--page-width);
   margin: 3rem auto 0;
   padding-top: 2.5rem;
-  border-top: 1px solid var(--rule);
+  background: var(--rule-band) top left / 100% 2px no-repeat;
 }
 
 .compare-section h2 {
+  color: var(--land);
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.6rem;
 }
@@ -429,11 +454,12 @@ button:focus-visible {
   max-width: 44rem;
   margin: 4rem auto 0;
   padding-top: 2.5rem;
-  border-top: 1px solid var(--rule);
+  background: var(--rule-band) top left / 100% 2px no-repeat;
 }
 
 .closing-section h2 {
   margin-bottom: 1.25rem;
+  color: var(--land);
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.6rem;
 }
@@ -453,6 +479,7 @@ button:focus-visible {
   margin-top: 3rem;
   padding: 2.5rem 2rem 3rem;
   background: var(--header-bg);
+  background-image: var(--header-band);
   color: var(--header-fg);
 }
 
@@ -473,7 +500,7 @@ button:focus-visible {
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #b3e4f5;
+  color: #d5f2fa;
 }
 
 .site-footer-sources {
