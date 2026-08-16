@@ -47,9 +47,11 @@ function erupt(originX: number, originY: number): void {
 
   boom.style.setProperty("--boom-x", `${originX}px`);
   boom.style.setProperty("--boom-y", `${originY}px`);
-  boom.style.setProperty("--boom-duration", `${BOOM_MS}ms`);
   boom.classList.add("is-erupting");
 
+  // On the stage, not on the burst: the white-out is a sibling and has to time
+  // itself against the same duration so it can rise underneath the burst.
+  stage.style.setProperty("--boom-duration", `${BOOM_MS}ms`);
   stage.style.setProperty("--line-duration", `${LINE_MS}ms`);
   stage.dataset.phase = "boom";
 

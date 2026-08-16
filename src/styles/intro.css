@@ -141,7 +141,9 @@
 
 .intro-boom.is-erupting {
   opacity: 1;
-  animation: boom-grow var(--boom-duration, 3s) cubic-bezier(0.4, 0, 0.75, 0.5) forwards;
+  animation:
+    boom-grow var(--boom-duration, 3s) cubic-bezier(0.4, 0, 0.75, 0.5) forwards,
+    boom-fade var(--boom-duration, 3s) linear forwards;
 }
 
 @keyframes boom-grow {
@@ -154,6 +156,28 @@
   }
 }
 
+/*
+ * The star is white but its outline is a thick black spike border, and past a
+ * certain scale those spikes stop reading as a burst and just sit at the edge
+ * of the screen — worst on a tall phone, where the top ones hang there in
+ * frame long after the middle has gone white. Fading the whole layer out over
+ * the last 40% retires them into the white-out rising underneath.
+ *
+ * Deliberately a second animation rather than an extra keyframe in boom-grow:
+ * keyframe timing functions apply per segment, so adding a 60% stop there
+ * would have split the expansion into two eased runs and re-timed the motion.
+ */
+@keyframes boom-fade {
+  0%,
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 /* Guarantees a genuinely white screen once the burst has done its work. */
 .intro-whiteout {
   position: fixed;
@@ -162,6 +186,17 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 600ms ease-in;
+}
+
+/*
+ * Comes up *under* the burst rather than after it. If it waited for the burst
+ * to finish there would be a moment where the burst has faded and the white
+ * hasn't arrived, and the crowd would flash back into view.
+ */
+.intro[data-phase="boom"] .intro-whiteout {
+  opacity: 1;
+  transition: opacity calc(var(--boom-duration, 3s) * 0.42) ease-in
+    calc(var(--boom-duration, 3s) * 0.5);
 }
 
 .intro[data-phase="white"] .intro-whiteout,
@@ -242,9 +277,14 @@
   text-decoration: none;
 }
 
+/*
+ * The splash keeps the artwork's cream paper rather than taking the explainer's
+ * sky palette — the crowd is drawn on cream and a cool ground fights the line
+ * art. Only the link picks up the site accent, so the hand-off reads as one site.
+ */
 .intro-nav a:hover,
 .intro-nav a:focus-visible {
-  color: #0d7377;
+  color: #0b6f9c;
   text-decoration: underline;
 }
 

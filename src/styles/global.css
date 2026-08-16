@@ -1,18 +1,22 @@
 /*
- * The palette is the blue-green of the planet seen from outside it — ocean
- * teal for anything interactive, deep water for the header and footer. The
- * paper tones stay warm, because the artwork is drawn on cream and a cool page
- * would fight it. Every pairing below clears 4.5:1; the accent is 5.5:1 on the
- * page and the header text 13:1 on its own ground.
+ * Sampled from the site's own logo rather than picked by eye: the drawn Earth
+ * is 46% ocean (cyan #71e7fb into blue #23b0f5), 39% land (#a6db38 into
+ * #39a645) and 14% charcoal-green outline (#2b3330). Those are the hues below.
+ * The bright ones can't carry text, so each is taken down in lightness until
+ * it clears contrast while keeping its hue: the ocean blue becomes the accent,
+ * deep water the header and footer, the outline the ink, and the pale sky the
+ * page. Everything here clears 4.5:1 — accent 5.3:1 on the page, ink 12.9:1,
+ * header text 10.7:1 on its own ground.
  */
 :root {
-  --ink: #1a1a1a;
-  --muted: #44514f;
-  --accent: #0d7377;
-  --accent-light: #7fd6cf; /* accent legible on the dark header/footer */
-  --header-bg: #0b2b30;
-  --header-fg: #f4f2ec;
-  --rule: #dbe3e0;
+  --ink: #22312e; /* the logo's outline, deepened for body text */
+  --muted: #4c625f;
+  --accent: #0b6f9c; /* the logo's ocean blue, taken down to carry text */
+  --accent-light: #7fe3fb; /* the logo's cyan, for use on deep water */
+  --header-bg: #0a3d54; /* deep water */
+  --header-fg: #eaf8fd;
+  --rule: #cfe6ee;
+  --page-bg: #f3fafc; /* pale sky */
   --page-width: 78rem;
   --wide: 64rem;
 }
@@ -26,7 +30,7 @@ body {
   font-family: system-ui, sans-serif;
   line-height: 1.6;
   color: var(--ink);
-  background: #fdfcf9;
+  background: var(--page-bg);
 }
 
 main {
@@ -179,7 +183,7 @@ button:focus-visible {
   margin: 0.6rem 0 0;
   padding: 0;
   list-style: none;
-  color: #7c8b88;
+  color: #6e8a92;
   font-size: 0.65rem;
   font-variant-numeric: tabular-nums;
 }
@@ -221,16 +225,24 @@ button:focus-visible {
   display: none;
 }
 
+/*
+ * These three encode data — which way a place is heading — so they stay three
+ * clearly different hues rather than being folded into the logo's blue-green,
+ * which would make the comparison unreadable. What did change is the register:
+ * each is retuned to the same saturation and depth as the palette around it,
+ * and "independent" is now the logo's own leaf green, since that is literally
+ * the colour of the thing it marks.
+ */
 .place-visual[data-trajectory="decline"] {
-  --trajectory-color: #c0392b;
+  --trajectory-color: #b03a2e;
 }
 
 .place-visual[data-trajectory="compound"] {
-  --trajectory-color: #d68910;
+  --trajectory-color: #c07a10;
 }
 
 .place-visual[data-trajectory="independent"] {
-  --trajectory-color: #1e8449;
+  --trajectory-color: #2f8f3f;
 }
 
 .place-visual-frame {
@@ -423,7 +435,7 @@ button[data-testid="compare-play"][aria-pressed="true"] {
 .site-footer-note {
   max-width: 36rem;
   margin: 0 0 1.5rem;
-  color: #b6c6c2;
+  color: #b7d8e4;
   font-size: 0.95rem;
 }
 
@@ -432,7 +444,7 @@ button[data-testid="compare-play"][aria-pressed="true"] {
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #8aa19c;
+  color: #8fb8c6;
 }
 
 .site-footer-sources {
@@ -452,7 +464,7 @@ button[data-testid="compare-play"][aria-pressed="true"] {
 }
 
 .site-footer-sources a {
-  color: #a9dfd8;
+  color: #8fe0f5;
 }
 
 .site-footer-sources a:hover {
