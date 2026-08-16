@@ -10,14 +10,15 @@ subset at the same moment. Time is the only mechanic; the checkboxes choose
 what's visible. Every stop is marked `observed` or `inferred` and cites a
 source. But the rates are the argument, not the conclusion: run far enough and
 all four arrive somewhere similar, which the closing section is for. The home
-page is a crowd drawing you click, which detonates into the explainer.
+page is a crowd you click, which detonates into the explainer.
 
 ## The moments that mattered
 
 ### A green check over a blank page
 
-I swapped the four hand-drawn SVGs for real photography and asked for AVIF to
-keep the payload down. Every sensor stayed green — typecheck, build, lint, 78
+I swapped the four hand-drawn SVGs for the generated scene frames and asked
+for AVIF to keep the payload down. Every sensor stayed green — typecheck,
+build, lint, 78
 tests — and the home page rendered as an empty cream rectangle. The file was a
 valid AVIF: correct `naturalWidth`, `decode()` resolved, no error event, and
 because a `<picture>` treats a successfully-decoded `<source>` as final, it never
@@ -50,7 +51,7 @@ ways — coarser for text, finer for images
 ([`342fd87...b4538ef`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-AuroraSunDev/compare/342fd87...b4538ef)).
 Right for what I knew; wrong once I read the notes the scenes were drawn from,
 which set out ten specific time points. Mid-slider, the caption read "1 year"
-over the year-20 drawing. I deleted the machinery rather than defend it — ten
+over the year-20 frame. I deleted the machinery rather than defend it — ten
 stops, ten frames, the frame derived from the stop so they cannot drift — and
 the test that asserted the decoupling now asserts they agree.
 
