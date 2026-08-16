@@ -195,14 +195,29 @@ describe("built page: the interaction is actually wired to the data", () => {
   // now separate controls, so what's held here is the contract rather than the
   // old markup: both exist, and the built page starts stopped.
   it("renders separate play and pause controls, with no autoplay on load", () => {
-    expect(
-      doc.querySelector('[data-testid="compare-play"]'),
-      "the comparison needs a play control",
-    ).toBeTruthy();
-    expect(
-      doc.querySelector('[data-testid="compare-pause"]'),
-      "pause must be its own control, not a second meaning for play",
-    ).toBeTruthy();
+    for (const [testid, role] of [
+      ["compare-play", "play"],
+      ["compare-pause", "pause"],
+    ]) {
+      const button = doc.querySelector(`[data-testid="${testid}"]`);
+      expect(button, `the comparison needs a ${role} control`).toBeTruthy();
+
+      // These are icon-only, so there is no text to fall back on: drop the
+      // aria-label and the control silently announces as just "button".
+      const name = button?.getAttribute("aria-label")?.trim() ?? button?.textContent?.trim();
+      expect(
+        name?.length,
+        `the ${role} control draws an icon, so it needs an accessible name`,
+      ).toBeGreaterThan(0);
+
+      // The glyph must not leak into that name.
+      for (const svg of button?.querySelectorAll("svg") ?? []) {
+        expect(
+          svg.getAttribute("aria-hidden"),
+          `the ${role} icon should be hidden from the accessibility tree`,
+        ).toBe("true");
+      }
+    }
 
     const controls = doc.querySelector('[data-testid="compare-controls"]');
     expect(

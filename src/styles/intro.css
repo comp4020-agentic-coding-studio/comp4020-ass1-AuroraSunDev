@@ -10,8 +10,10 @@
   inset: 0;
   overflow: hidden;
 
-  /* the artwork's own paper tone, so no seam shows at odd aspect ratios */
-  background: #f7f4e9;
+  /* the artwork's own sky, sampled from its edges, so no seam shows at odd
+     aspect ratios — it was cream until the drawing was replaced by one set
+     against a blue sky */
+  background: #1a7bc8;
 }
 
 /*
@@ -51,20 +53,25 @@
 }
 
 /*
- * Placed on the blank body of the centre figure, measured off the rendered
- * artwork: the torso's outlines sit at 45.9% and 51.4% across, so it centres
- * on 48.66% and is 5.5% of the frame wide, and it spans 50% to 64.5% down,
- * centring on 57.3%. The font size is a fraction of the frame's width so the
- * words keep the same margin inside those outlines at every viewport.
+ * Placed on the blank body of the centre figure. These numbers are measured off
+ * the artwork rather than judged by eye — scanning the image for the white run
+ * down its middle finds the head at 30–39.4% and the torso at 44.2–51.9% down,
+ * spanning 47.67% to 51.32% across. So the anchor is its centre, 49.49% / 48.05%.
  *
- * Both lines live in one box that is centred on that point, so going from one
- * word to two grows the block upward and downward equally and the anchor does
- * not move.
+ * Re-measure this whenever the artwork is replaced. It has changed once
+ * already, and the old anchor left the words sitting below the figure on other
+ * people's heads while still looking deliberate.
+ *
+ * The torso is only 3.65% of the frame wide — a third narrower than the
+ * previous drawing's — which is what sets the font size below.
+ *
+ * Both lines live in one box centred on that point, so going from one word to
+ * two grows the block up and down equally and the anchor does not move.
  */
 .intro-vanish {
   position: absolute;
-  top: 57.3%;
-  left: 48.66%;
+  top: 48.05%;
+  left: 49.49%;
   padding: 0;
   border: 0;
   background: none;
@@ -73,10 +80,11 @@
 
   /*
    * Uppercase and bold run far wider than lowercase at the same size, hence the
-   * small factor here — tuned so the longer line clears the torso outlines
-   * rather than crossing them.
+   * small factor here — tuned by measuring the rendered label against the torso
+   * rather than by eye. At this size "CLICK" is 3.14% of the frame wide inside
+   * a 3.65% torso, so it clears the outlines with a margin on both sides.
    */
-  font-size: calc(var(--frame-w) * 0.0118);
+  font-size: calc(var(--frame-w) * 0.009);
   font-style: italic;
   font-weight: 700;
   line-height: 1.05;

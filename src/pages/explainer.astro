@@ -61,9 +61,37 @@ import { getStateForPlace } from "../lib/interaction";
         data-playing="false"
       >
         <TimeSlider scope="compare" />
+        {/*
+          Icon-only, so the label moves to aria-label — without it these read as
+          just "button" to a screen reader. The glyphs themselves are marked
+          aria-hidden so they add nothing to that name.
+
+          The triangle's points are set so its centroid lands on x=12 rather
+          than its bounding box, because a triangle centred by its box looks
+          left-of-centre inside a circle.
+        */}
         <div class="compare-section-transport">
-          <button type="button" data-testid="compare-play">Play</button>
-          <button type="button" data-testid="compare-pause">Pause</button>
+          <button
+            type="button"
+            class="transport-button"
+            data-testid="compare-play"
+            aria-label="Play the timeline"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M8.5 5.5 L19 12 L8.5 18.5 Z"></path>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="transport-button"
+            data-testid="compare-pause"
+            aria-label="Pause the timeline"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="7.5" y="5.5" width="3.5" height="13" rx="1"></rect>
+              <rect x="13" y="5.5" width="3.5" height="13" rx="1"></rect>
+            </svg>
+          </button>
         </div>
       </div>
     </section>
