@@ -40,9 +40,9 @@ const nyc: Place = {
   dependency: "high",
   trajectory: "decline",
   mechanism:
-    "A modern city is held up by work that never stops: power, pumping, repair. Take the people away and it comes apart from the inside first, and from the top down.",
+    "A modern city is held up by work that never stops: power, pumping, repair. None of that fails because a part breaks. It fails because nobody is left to handle the exception — a protective relay trips, a generator drops off the network, and there is no operator to bring either back.",
   contrast:
-    "The fastest and most complete change of the four. It doesn't end as a ruined city — it ends as a different kind of landscape.",
+    "It doesn't empty out evenly, either. Around 97% of the city's water arrives by gravity from reservoirs upstate, so taps on low floors outlive the grid, while the pumps that lift water to rooftop tanks do not: the city loses its height before it loses its ground. The fastest and most complete change of the four — and it doesn't end as a ruined city, it ends as a different kind of landscape.",
   stops: [
     {
       label: "The lights go out",
@@ -133,9 +133,9 @@ const nuclear: Place = {
   dependency: "high",
   trajectory: "compound",
   mechanism:
-    "Its safety systems need power and attention continuously; its containment shell was engineered to need almost nothing. The same site runs on two clocks at once.",
+    "Two systems on one site with opposite needs. The cooling and safety equipment wants power and attention continuously. The containment shell was engineered to want almost nothing — metres of reinforced concrete, no thin skin, no glass, nothing for weather to get hold of. The same place runs on two clocks at once.",
   contrast:
-    "The only place here whose worst moment comes in the first weeks and then recedes. After that the story stops being the accident and becomes weather and forest.",
+    "Which means the danger and the ruin are unrelated. How bad it gets is settled early and mostly by the plant's own design, not by anything anyone could have done; the radioactivity that follows then falls on a schedule set by half-lives, which no absence changes. The only place here whose worst moment comes first and then recedes — after that the story stops being the accident and becomes weather and forest.",
   stops: [
     {
       label: "It shuts itself down",
@@ -230,9 +230,9 @@ const wall: Place = {
   dependency: "low",
   trajectory: "decline",
   mechanism:
-    "Built to endure with very little upkeep — but not none. Sections nobody maintains are eroding right now, which is why its future isn't guesswork.",
+    "It isn't one building. The system runs past 20,000 km and was raised between the third century BC and the seventeenth, in fired brick and stone across the east and in packed earth through the dry west — two material families that come apart in different ways and on different clocks. And the famous restored stretches aren't standing on old workmanship alone: they are standing on inspection, drainage and repair.",
   contrast:
-    "By far the slowest of the four, and the only one whose later states you can already go and look at today.",
+    "So its future isn't guesswork. Stretches nobody looks after are wearing down right now, and they are simply further along the road the maintained ones are on. By far the slowest of the four, and the only one whose later states you can go and look at today.",
   stops: [
     {
       label: "Only the visitors are gone",
@@ -321,9 +321,9 @@ const rainforest: Place = {
   dependency: "low",
   trajectory: "independent",
   mechanism:
-    "Nothing here was being maintained in the first place. This forest's condition is the product of its own cycles — trees falling, gaps opening, seedlings racing for the light.",
+    "There is nothing here to switch off. No grid, no pumps, no wires overhead, and deep inside it stretches where months can pass without anyone walking through. Its condition is the product of its own cycles — old trees falling, gaps opening, seedlings racing upward for the light — and not one of those was ever ours to keep going.",
   contrast:
-    "The only place whose first and last frames could be swapped without anyone noticing. What changes it over 500 years is climate, not our absence.",
+    "So our absence isn't an event here, because our presence wasn't one. The only place whose first and last frames could be swapped without anyone noticing — with the honest caveat that \"undisturbed\" is a claim about direct upkeep, not about being untouched. What changes it across five hundred years is climate, which reaches everywhere, rather than our leaving.",
   stops: [
     {
       label: "Completely normal",

@@ -6,15 +6,15 @@ import { assetUrl } from "../lib/asset-url";
 // explainer. Reduced-motion keeps the same beats at a fraction of the length.
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const BOOM_MS = REDUCED ? 400 : 3_000;
+const BOOM_MS = REDUCED ? 400 : 2_000;
 const WHITE_MS = REDUCED ? 200 : 600;
 
 // The line is the only text in the sequence and it gets read once. The
 // keyframes spend 26% of this arriving and 26% leaving, holding it fully
-// opaque for the 48% between — about 2.9s of reading at this length, with
-// ~1.5s of fade either side. Both ends are deliberately slow, so the run has
+// opaque for the 48% between — about 2.4s of reading at this length, with
+// ~1.3s of fade either side. Both ends are deliberately slow, so the run has
 // to be long enough to pay for them and still leave the reading time intact.
-const LINE_MS = REDUCED ? 3_000 : 6_000;
+const LINE_MS = REDUCED ? 2_600 : 5_000;
 
 const EXPLAINER = assetUrl("explainer.html");
 
