@@ -9,11 +9,12 @@ const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const BOOM_MS = REDUCED ? 400 : 3_000;
 const WHITE_MS = REDUCED ? 200 : 600;
 
-// The line is the only text in the sequence and it gets read once, so it is
-// timed for reading rather than for pacing: the keyframes hold it fully opaque
-// for the middle ~64% of this, which is about 2.9s — comfortably longer than
-// the ~1.5s it takes to read five words, with the rest spent fading.
-const LINE_MS = REDUCED ? 2_600 : 4_500;
+// The line is the only text in the sequence and it gets read once. The
+// keyframes spend 26% of this arriving and 26% leaving, holding it fully
+// opaque for the 48% between — about 2.9s of reading at this length, with
+// ~1.5s of fade either side. Both ends are deliberately slow, so the run has
+// to be long enough to pay for them and still leave the reading time intact.
+const LINE_MS = REDUCED ? 3_000 : 6_000;
 
 const EXPLAINER = assetUrl("explainer.html");
 
@@ -69,8 +70,15 @@ function erupt(originX: number, originY: number): void {
 }
 
 trigger?.addEventListener("click", (event) => {
+  // Latch the cap down. :active already handles the live press, but it ends on
+  // mouse-up — exactly when the sequence starts — so without this the button
+  // would spring back up and then fade out, which reads as it recovering
+  // rather than as having been pushed in. Set on click rather than pointerdown
+  // so a press dragged off the button leaves nothing stuck.
+  trigger.dataset.pressed = "";
+
   // Keyboard activation reports a 0,0 pointer position — fall back to the
-  // word's own centre so the burst still starts at the figure either way.
+  // button's own centre so the burst still starts at the figure either way.
   const fromPointer = event.clientX !== 0 || event.clientY !== 0;
   const rect = trigger.getBoundingClientRect();
   erupt(

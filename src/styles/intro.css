@@ -69,75 +69,132 @@
  * banner pasted over the picture.
  */
 .intro-vanish {
+  /* Everything below is a fraction of the cap, so the whole assembly — rim,
+     travel, lettering, shadows — scales as one object with the artwork. */
+  --btn: calc(var(--frame-w) * 0.062);
+  --lift: calc(var(--btn) * 0.075);
+
   position: absolute;
   top: 68%;
   left: 50.3%;
-  padding: 0.62em 1.35em;
+  width: var(--btn);
+  height: var(--btn);
+  padding: calc(var(--btn) * 0.07);
   border: 0;
-  border-radius: 999px;
-  background: #e0242b;
-  color: #fff;
-  font-family: system-ui, sans-serif;
-  font-size: calc(var(--frame-w) * 0.0115);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.09em;
-  text-align: center;
-  text-transform: uppercase;
-  white-space: nowrap;
+  border-radius: 50%;
+
+  /* The housing: unlit, so the cap sitting in it has something to be lit
+     against. Its highlight is at the top because the light in this scene is. */
+  background: radial-gradient(circle at 50% 22%, #4a1013, #190406 78%);
   cursor: pointer;
   box-shadow:
-    0 0 10px 2px rgb(255 45 55 / 50%),
-    0 2px 10px rgb(0 0 0 / 45%);
+    0 0 0 1px rgb(0 0 0 / 55%),
+    0 calc(var(--btn) * 0.05) calc(var(--btn) * 0.13) rgb(0 0 0 / 55%),
+    0 0 calc(var(--btn) * 0.3) calc(var(--btn) * 0.04) rgb(255 45 55 / 38%);
   translate: -50% -50%;
-}
-
-.intro-vanish:hover {
-  background: #ff3a41;
-  scale: 1.06;
 }
 
 /* The page accent is blue on a dark photo; white reads far better here. */
 .intro-vanish:focus-visible {
   outline: 3px solid #fff;
-  outline-offset: 3px;
+  outline-offset: 4px;
 }
 
 /*
- * Two jobs in one animation: a ring that expands out of the edge and fades,
- * which is what catches the eye in peripheral vision, and a glow that breathes
- * underneath it so the button never looks flat. The old label pulsed its
- * opacity instead, which is wrong for a button — a control that fades halfway
- * out reads as disabled.
- *
- * The resting glow lives on the base rule rather than in the keyframes, so
- * that switching this animation off (reduced motion, below) leaves a lit red
- * button rather than a flat one.
+ * The cap. Three of the four shadows are doing the 3D: an inset highlight
+ * along the top, an inset shade along the bottom, and — the one that matters —
+ * a hard, un-blurred `0 var(--lift) 0` shadow, which is not a shadow at all
+ * but the side wall of the key, drawn as a solid slab of darker red. Pressing
+ * shortens that wall and moves the cap down by the same amount, so the face
+ * travels and the object stays the same height. Blurring it instead would just
+ * make the cap look like it was floating.
  */
-.intro:not([data-phase]) .intro-vanish {
-  animation: push-glow 1.9s ease-out infinite;
+.intro-vanish-cap {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 24%,
+    #ff8f8b 0%,
+    #f43a40 42%,
+    #c4161d 78%,
+    #9d0e15 100%
+  );
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: calc(var(--btn) * 0.2);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgb(110 0 6 / 55%);
+  box-shadow:
+    inset 0 calc(var(--btn) * 0.035) calc(var(--btn) * 0.05) rgb(255 255 255 / 45%),
+    inset 0 calc(var(--btn) * -0.05) calc(var(--btn) * 0.07) rgb(110 0 8 / 65%),
+    0 var(--lift) 0 #7a0b11,
+    0 calc(var(--lift) + var(--btn) * 0.02) calc(var(--btn) * 0.06) rgb(0 0 0 / 45%);
+  transition:
+    translate 90ms ease-out,
+    box-shadow 90ms ease-out;
 }
 
-@keyframes push-glow {
+.intro-vanish:hover .intro-vanish-cap {
+  background: radial-gradient(
+    circle at 50% 24%,
+    #ffaba6 0%,
+    #ff4c52 42%,
+    #d6191f 78%,
+    #ac1017 100%
+  );
+}
+
+/*
+ * `:active` covers the mouse and the keyboard's own press; `data-pressed` is
+ * set by the script at the moment the sequence starts and never cleared, so
+ * the button fades out still depressed rather than springing back up while
+ * the burst is going off.
+ */
+.intro-vanish:active .intro-vanish-cap,
+.intro-vanish[data-pressed] .intro-vanish-cap {
+  box-shadow:
+    inset 0 calc(var(--btn) * 0.02) calc(var(--btn) * 0.04) rgb(255 255 255 / 22%),
+    inset 0 calc(var(--btn) * -0.03) calc(var(--btn) * 0.06) rgb(110 0 8 / 75%),
+    0 calc(var(--lift) * 0.15) 0 #7a0b11,
+    0 calc(var(--lift) * 0.15) calc(var(--btn) * 0.03) rgb(0 0 0 / 40%);
+  translate: 0 calc(var(--lift) * 0.85);
+}
+
+/*
+ * A ring that expands out of the rim and fades — what catches the eye in
+ * peripheral vision. It lives on a pseudo-element rather than in the button's
+ * own box-shadow because that list is now carrying the housing's depth, and a
+ * keyframe would have had to restate all of it on every step.
+ */
+.intro-vanish::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.intro:not([data-phase]) .intro-vanish::after {
+  animation: push-ring 1.9s ease-out infinite;
+}
+
+@keyframes push-ring {
   0% {
-    box-shadow:
-      0 0 0 0 rgb(255 45 55 / 70%),
-      0 0 10px 2px rgb(255 45 55 / 50%),
-      0 2px 10px rgb(0 0 0 / 45%);
+    box-shadow: 0 0 0 0 rgb(255 60 66 / 55%);
   }
 
   70% {
-    box-shadow:
-      0 0 0 1.15em rgb(255 45 55 / 0%),
-      0 0 22px 7px rgb(255 45 55 / 80%),
-      0 2px 10px rgb(0 0 0 / 45%);
+    box-shadow: 0 0 0 calc(var(--btn) * 0.3) rgb(255 60 66 / 0%);
   }
 
   100% {
-    box-shadow:
-      0 0 0 0 rgb(255 45 55 / 0%),
-      0 0 10px 2px rgb(255 45 55 / 50%),
-      0 2px 10px rgb(0 0 0 / 45%);
+    box-shadow: 0 0 0 0 rgb(255 60 66 / 0%);
   }
 }
 
@@ -150,59 +207,159 @@
 }
 
 /*
- * The burst. Its source art carries a real alpha channel — a white star with a
- * feathered glow on transparency — so it composites over the crowd on its own,
- * with no blend mode involved. Keep it a PNG: flattening it to JPEG drops the
- * alpha onto white and the whole rectangle turns opaque.
+ * The burst, drawn entirely in gradients so it has no edge of its own to give
+ * away. It anchors on the click point and grows until the core alone covers
+ * the screen; the white-out underneath then guarantees the last of it.
  */
-.intro-boom {
+.intro-burst {
   position: fixed;
   top: var(--boom-y, 50%);
   left: var(--boom-x, 50%);
-  width: 90vmax;
-  height: auto;
+  width: 150vmax;
+  height: 150vmax;
   opacity: 0;
   pointer-events: none;
-  scale: 0.02;
   translate: -50% -50%;
 }
 
-.intro-boom.is-erupting {
+.intro-burst.is-erupting {
   opacity: 1;
-  animation:
-    boom-grow var(--boom-duration, 3s) cubic-bezier(0.4, 0, 0.75, 0.5) forwards,
-    boom-fade var(--boom-duration, 3s) linear forwards;
 }
 
-@keyframes boom-grow {
+.intro-burst-rays,
+.intro-burst-core {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  scale: 0.015;
+}
+
+/*
+ * The flash at the middle: solid white where it starts, thinning to nothing
+ * well before its own edge, so what the eye sees is light rather than a white
+ * disc with a rim. `closest-side` keeps the falloff circular in a square box
+ * regardless of viewport.
+ */
+.intro-burst-core {
+  background: radial-gradient(
+    circle closest-side,
+    #fff 0%,
+    #fff 30%,
+    rgb(255 255 255 / 62%) 55%,
+    rgb(255 255 255 / 22%) 76%,
+    rgb(255 255 255 / 0%) 100%
+  );
+}
+
+/*
+ * The rays. A conic gradient of 28 soft-edged white wedges at deliberately
+ * uneven angles and widths — generated once with a seeded random walk around
+ * the circle rather than typed by hand, because anything evenly spaced reads
+ * as a machine part instead of light. Each wedge fades to transparent at both
+ * of its sides, which is what stops them looking like cut paper.
+ *
+ * The radial mask then does the inside-to-outside part: fully present near the
+ * middle, half gone by the time it is level with the core's falloff, and clear
+ * at the rim. Without it the wedges would run to a hard circular edge.
+ */
+.intro-burst-rays {
+  background: conic-gradient(
+    transparent 10.7deg, #fff 13.7deg, transparent 16.4deg, transparent
+    25deg, #fff 27.6deg, transparent 30.3deg, transparent 39.1deg,
+    #fff 42.9deg, transparent 47.5deg, transparent 52deg, #fff
+    55.8deg, transparent 58.5deg, transparent 68.8deg, #fff 71.1deg,
+    transparent 72.7deg, transparent 81deg, #fff 84.4deg, transparent
+    89.4deg, transparent 96.6deg, #fff 97.8deg, transparent 98.7deg,
+    transparent 102.3deg, #fff 105.5deg, transparent 107.7deg,
+    transparent 111.7deg, #fff 115.1deg, transparent 117.8deg,
+    transparent 121.8deg, #fff 124.6deg, transparent 126.7deg,
+    transparent 130.5deg, #fff 133.1deg, transparent 136.1deg,
+    transparent 146.6deg, #fff 148.7deg, transparent 151.5deg,
+    transparent 158.7deg, #fff 160.5deg, transparent 162.4deg,
+    transparent 167deg, #fff 170.9deg, transparent 174.9deg,
+    transparent 180.9deg, #fff 183.1deg, transparent 184.7deg,
+    transparent 189.3deg, #fff 193.1deg, transparent 197.7deg,
+    transparent 204deg, #fff 206.8deg, transparent 209.1deg,
+    transparent 212.8deg, #fff 215.1deg, transparent 218.1deg,
+    transparent 226.4deg, #fff 229.6deg, transparent 232.4deg,
+    transparent 240.6deg, #fff 241.6deg, transparent 242.9deg,
+    transparent 253.2deg, #fff 255.8deg, transparent 259.6deg,
+    transparent 268.4deg, #fff 270.7deg, transparent 273.8deg,
+    transparent 281.7deg, #fff 284.9deg, transparent 289.1deg,
+    transparent 293.1deg, #fff 296.7deg, transparent 299.9deg,
+    transparent 308.4deg, #fff 311.2deg, transparent 313.8deg,
+    transparent 320.1deg, #fff 324.2deg, transparent 329.8deg,
+    transparent 340.6deg, #fff 343.1deg, transparent 345.8deg,
+    transparent 353.3deg, #fff 355.4deg, transparent 358.3deg
+  );
+  mask-image: radial-gradient(
+    circle closest-side,
+    #000 0%,
+    #000 14%,
+    rgb(0 0 0 / 55%) 45%,
+    rgb(0 0 0 / 18%) 72%,
+    rgb(0 0 0 / 0%) 100%
+  );
+}
+
+/*
+ * The rays outrun the core and are gone before it lands — light thrown ahead
+ * of the flash, not a shape that arrives somewhere. Their fade and their drift
+ * are separate animations rather than extra keyframes in burst-rays, because
+ * keyframe timing functions apply per segment: a stop added mid-way would have
+ * split the expansion into two eased runs and quietly re-timed it.
+ */
+.intro-burst.is-erupting .intro-burst-core {
+  animation: burst-core var(--boom-duration, 3s) cubic-bezier(0.16, 0.7, 0.36, 1)
+    forwards;
+}
+
+.intro-burst.is-erupting .intro-burst-rays {
+  animation:
+    burst-rays var(--boom-duration, 3s) cubic-bezier(0.1, 0.78, 0.28, 1) forwards,
+    burst-fade var(--boom-duration, 3s) ease-in forwards,
+    burst-drift var(--boom-duration, 3s) linear forwards;
+}
+
+@keyframes burst-core {
+  from {
+    scale: 0.015;
+  }
+
+  to {
+    scale: 1.5;
+  }
+}
+
+@keyframes burst-rays {
   from {
     scale: 0.02;
   }
 
   to {
-    scale: 4.2;
+    scale: 3.4;
   }
 }
 
-/*
- * The star is white but its outline is a thick black spike border, and past a
- * certain scale those spikes stop reading as a burst and just sit at the edge
- * of the screen — worst on a tall phone, where the top ones hang there in
- * frame long after the middle has gone white. Fading the whole layer out over
- * the last 40% retires them into the white-out rising underneath.
- *
- * Deliberately a second animation rather than an extra keyframe in boom-grow:
- * keyframe timing functions apply per segment, so adding a 60% stop there
- * would have split the expansion into two eased runs and re-timed the motion.
- */
-@keyframes boom-fade {
+@keyframes burst-fade {
   0%,
-  60% {
+  50% {
     opacity: 1;
   }
 
   100% {
     opacity: 0;
+  }
+}
+
+/* A few degrees over the whole run, so the fan is never quite still. */
+@keyframes burst-drift {
+  from {
+    rotate: 0deg;
+  }
+
+  to {
+    rotate: 24deg;
   }
 }
 
@@ -254,20 +411,22 @@
 }
 
 /*
- * Weighted for reading, not for symmetry: in fast, held for the middle ~64% of
- * the run, then out. The fade-in is short because a line you are still waiting
- * to see is dead time; the hold is what the visitor actually reads in.
+ * Symmetrical and slow at both ends: the line surfaces out of the white over
+ * about a second and a half, holds for nearly three, and sinks back over the
+ * same second and a half. Weighting the fades this heavily costs reading time,
+ * which is why the run is long enough to afford it — the arrival and the
+ * leaving are the effect here, not overhead in front of it.
  */
 @keyframes intro-line {
   0% {
     opacity: 0;
   }
 
-  14% {
+  26% {
     opacity: 1;
   }
 
-  78% {
+  74% {
     opacity: 1;
   }
 
@@ -317,10 +476,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro:not([data-phase]) .intro-vanish {
+  .intro:not([data-phase]) .intro-vanish::after {
     animation: none;
   }
 
+  /* The press is the one movement worth keeping: it is direct feedback for
+     something the visitor just did, not decoration playing at them. */
   .intro-whiteout {
     transition-duration: 200ms;
   }

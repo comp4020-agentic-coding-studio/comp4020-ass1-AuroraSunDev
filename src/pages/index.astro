@@ -18,8 +18,10 @@ import "../styles/intro.css";
         alt="A dense city crowd filling a street from edge to edge, hundreds of people walking, one woman near the centre looking straight ahead"
       />
       {/*
-        One line in one span. The photo is busy enough that two stacked words
-        read as noise in it, where a single pill reads as a control.
+        Two elements, because the button is a physical object: the <button> is
+        the housing that stays put, and the span is the cap that travels down
+        into it when pressed. One element could only move as a whole, which
+        reads as the whole control sliding rather than a key being pushed.
       */}
       <button
         type="button"
@@ -27,22 +29,25 @@ import "../styles/intro.css";
         data-testid="vanish-trigger"
         aria-describedby="intro-vanish-hint"
       >
-        <span>Push me</span>
+        <span class="intro-vanish-cap">Push</span>
       </button>
       <span id="intro-vanish-hint" class="sr-only">
         Starts the sequence that makes everyone here disappear
       </span>
     </div>
 
-    <img
-      class="intro-boom"
-      data-testid="intro-boom"
-      src={assetUrl("intro/boom.png")}
-      width="1200"
-      height="800"
-      alt=""
-      aria-hidden="true"
-    />
+    {/*
+      The burst is drawn, not photographed. It used to be a PNG of a star, and
+      a bitmap can only ever be the shape it was drawn at — blown up to fill a
+      screen its outline stayed hard and its black spikes sat in frame long
+      after the middle had gone white. Two gradient layers instead: a core that
+      goes solid white at the centre and thins outwards, and a fan of rays that
+      does the same, so every edge fades on its own rather than ending.
+    */}
+    <div class="intro-burst" data-testid="intro-boom" aria-hidden="true">
+      <div class="intro-burst-rays"></div>
+      <div class="intro-burst-core"></div>
+    </div>
     <div class="intro-whiteout" aria-hidden="true"></div>
     <p class="intro-line" data-testid="intro-line">When humans vanish in a second</p>
   </div>
