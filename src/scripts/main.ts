@@ -135,42 +135,56 @@ for (const checkbox of document.querySelectorAll<HTMLInputElement>(
   visual.hidden = !checkbox.checked;
 }
 
-// Autoplay: off by default, user-triggered only, and stops at the final
-// (500-year) stop rather than looping back to day 1.
+// Autoplay: off by default, user-triggered only, and it runs to the final
+// (500-year) stop rather than looping back to day 1 on its own.
+const controls = document.querySelector<HTMLElement>('[data-testid="compare-controls"]');
 const playButton = document.querySelector<HTMLButtonElement>('[data-testid="compare-play"]');
+const pauseButton = document.querySelector<HTMLButtonElement>('[data-testid="compare-pause"]');
 let playTimer: ReturnType<typeof setInterval> | null = null;
+
+// Moves the shared slider without the drag handler reading it as a person
+// grabbing the slider — which would pause the very playback that moved it.
+function moveCompareTo(stopIndex: number): void {
+  if (!compareSlider) return;
+  isAutoAdvancing = true;
+  compareSlider.value = String(sliderValueForStop(stopIndex, TIMELINE.length));
+  compareSlider.dispatchEvent(new Event("input"));
+  isAutoAdvancing = false;
+}
+
+function setPlaying(playing: boolean): void {
+  controls?.setAttribute("data-playing", String(playing));
+}
 
 function stopPlayback(): void {
   if (playTimer !== null) {
     clearInterval(playTimer);
     playTimer = null;
   }
-  playButton?.setAttribute("aria-pressed", "false");
+  setPlaying(false);
 }
 
 function startPlayback(): void {
-  if (!compareSlider) return;
-  playButton?.setAttribute("aria-pressed", "true");
+  // Pressing Play twice should not stack a second interval on the first.
+  if (!compareSlider || playTimer !== null) return;
+
+  // At the last stop there is nothing left to play forward into, so Play means
+  // "again, from the beginning" rather than doing nothing at all.
+  if (compareStopIndex >= TIMELINE.length - 1) moveCompareTo(0);
+
+  setPlaying(true);
   playTimer = setInterval(() => {
     const next = compareStopIndex + 1;
     if (next > TIMELINE.length - 1) {
       stopPlayback();
       return;
     }
-    isAutoAdvancing = true;
-    compareSlider.value = String(sliderValueForStop(next, TIMELINE.length));
-    compareSlider.dispatchEvent(new Event("input"));
-    isAutoAdvancing = false;
+    moveCompareTo(next);
   }, 1200);
 }
 
-playButton?.addEventListener("click", () => {
-  if (playTimer !== null) {
-    stopPlayback();
-  } else {
-    startPlayback();
-  }
-});
+playButton?.addEventListener("click", startPlayback);
+pauseButton?.addEventListener("click", stopPlayback);
 
 compareSlider?.addEventListener("input", () => {
   if (!isAutoAdvancing && playTimer !== null) stopPlayback();

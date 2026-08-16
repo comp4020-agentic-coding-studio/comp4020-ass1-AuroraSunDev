@@ -48,11 +48,23 @@ import { getStateForPlace } from "../lib/interaction";
           <PlaceVisual place={place} scope="compare" stop={getStateForPlace(place, 0)} />
         ))}
       </div>
-      <div class="compare-section-controls">
+      {/*
+        Two plain buttons rather than one that changes meaning under the
+        cursor. Both stay enabled and both are safe to press twice: pressing
+        Play while it is already running does nothing, and so does Pause while
+        it is already stopped. `data-playing` is the one piece of state, set
+        here so the built page says plainly that nothing autoplays on load.
+      */}
+      <div
+        class="compare-section-controls"
+        data-testid="compare-controls"
+        data-playing="false"
+      >
         <TimeSlider scope="compare" />
-        <button type="button" data-testid="compare-play" aria-pressed="false">
-          Play
-        </button>
+        <div class="compare-section-transport">
+          <button type="button" data-testid="compare-play">Play</button>
+          <button type="button" data-testid="compare-pause">Pause</button>
+        </div>
       </div>
     </section>
 

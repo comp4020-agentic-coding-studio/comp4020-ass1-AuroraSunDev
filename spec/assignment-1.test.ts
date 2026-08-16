@@ -191,9 +191,24 @@ describe("built page: the interaction is actually wired to the data", () => {
     ).toMatch(/\.place-visual\[hidden\]\s*\{[^}]*display:\s*none/);
   });
 
-  it("renders the play control paused by default, with no autoplay on load", () => {
-    const playButton = doc.querySelector('[data-testid="compare-play"]');
-    expect(playButton?.getAttribute("aria-pressed")).toBe("false");
+  // Was one button whose meaning flipped as you pressed it. Play and Pause are
+  // now separate controls, so what's held here is the contract rather than the
+  // old markup: both exist, and the built page starts stopped.
+  it("renders separate play and pause controls, with no autoplay on load", () => {
+    expect(
+      doc.querySelector('[data-testid="compare-play"]'),
+      "the comparison needs a play control",
+    ).toBeTruthy();
+    expect(
+      doc.querySelector('[data-testid="compare-pause"]'),
+      "pause must be its own control, not a second meaning for play",
+    ).toBeTruthy();
+
+    const controls = doc.querySelector('[data-testid="compare-controls"]');
+    expect(
+      controls?.getAttribute("data-playing"),
+      "the page must arrive stopped — nothing animates until the visitor asks",
+    ).toBe("false");
   });
 
   it("links home without a root-absolute path", () => {

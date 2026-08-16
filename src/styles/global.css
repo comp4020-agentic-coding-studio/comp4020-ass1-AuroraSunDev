@@ -1,22 +1,25 @@
 /*
  * Sampled from the site's own logo rather than picked by eye: the drawn Earth
  * is 46% ocean (cyan #71e7fb into blue #23b0f5), 39% land (#a6db38 into
- * #39a645) and 14% charcoal-green outline (#2b3330). Those are the hues below.
- * The bright ones can't carry text, so each is taken down in lightness until
- * it clears contrast while keeping its hue: the ocean blue becomes the accent,
- * deep water the header and footer, the outline the ink, and the pale sky the
- * page. Everything here clears 4.5:1 — accent 5.3:1 on the page, ink 12.9:1,
- * header text 10.7:1 on its own ground.
+ * #39a645) and 14% charcoal-green outline (#2b3330).
+ *
+ * Tuned bright rather than deep — the page should feel like daylight on water,
+ * not the bottom of it. Each value is the lightest one that still clears its
+ * contrast bar, which is what stops "brighter" turning into "washed out":
+ * accent 4.6:1 on the page and 4.8:1 on white, ink 12.9:1, header text 6.1:1,
+ * footer body 5.2:1. --accent-bright is past the text bar on purpose and is
+ * only ever used for graphics, where the bar is 3:1.
  */
 :root {
-  --ink: #22312e; /* the logo's outline, deepened for body text */
-  --muted: #4c625f;
-  --accent: #0b6f9c; /* the logo's ocean blue, taken down to carry text */
-  --accent-light: #7fe3fb; /* the logo's cyan, for use on deep water */
-  --header-bg: #0a3d54; /* deep water */
-  --header-fg: #eaf8fd;
-  --rule: #cfe6ee;
-  --page-bg: #f3fafc; /* pale sky */
+  --ink: #12333d; /* cool and dark enough to read, not black */
+  --muted: #42626c;
+  --accent: #0d7ba4; /* the brightest ocean blue that still carries text at 4.6:1 */
+  --accent-bright: #22b0e0; /* the logo's blue at full strength, graphics only */
+  --accent-light: #a9ebff; /* for use on the header and footer */
+  --header-bg: #0a6885; /* open water, not deep water */
+  --header-fg: #f2fdff;
+  --rule: #cdeef7;
+  --page-bg: #f0fdff; /* the palest of the logo's cyans */
   --page-width: 78rem;
   --wide: 64rem;
 }
@@ -183,7 +186,7 @@ button:focus-visible {
   margin: 0.6rem 0 0;
   padding: 0;
   list-style: none;
-  color: #6e8a92;
+  color: #5d8390;
   font-size: 0.65rem;
   font-variant-numeric: tabular-nums;
 }
@@ -234,15 +237,15 @@ button:focus-visible {
  * the colour of the thing it marks.
  */
 .place-visual[data-trajectory="decline"] {
-  --trajectory-color: #b03a2e;
+  --trajectory-color: #d43f26;
 }
 
 .place-visual[data-trajectory="compound"] {
-  --trajectory-color: #c07a10;
+  --trajectory-color: #c9820c;
 }
 
 .place-visual[data-trajectory="independent"] {
-  --trajectory-color: #2f8f3f;
+  --trajectory-color: #2f9b41;
 }
 
 .place-visual-frame {
@@ -374,7 +377,12 @@ button:focus-visible {
   margin: 2rem 0 0;
 }
 
-button[data-testid="compare-play"] {
+.compare-section-transport {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.compare-section-transport button {
   padding: 0.5rem 1.25rem;
   border: 1px solid var(--accent);
   border-radius: 0.4rem;
@@ -382,9 +390,30 @@ button[data-testid="compare-play"] {
   color: var(--accent);
   font-weight: 600;
   cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
-button[data-testid="compare-play"][aria-pressed="true"] {
+.compare-section-transport button:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/*
+ * Whichever one would do nothing right now is dimmed rather than disabled.
+ * Disabling the button you just pressed drops keyboard focus to the body
+ * mid-interaction, and it also makes Play unpressable at exactly the moment
+ * it has a job to do — restarting from the end.
+ */
+.compare-section-controls[data-playing="true"] [data-testid="compare-play"],
+.compare-section-controls[data-playing="false"] [data-testid="compare-pause"] {
+  border-color: var(--rule);
+  color: var(--muted);
+  opacity: 0.65;
+}
+
+.compare-section-controls[data-playing="true"] [data-testid="compare-pause"] {
   background: var(--accent);
   color: #fff;
 }
@@ -435,7 +464,7 @@ button[data-testid="compare-play"][aria-pressed="true"] {
 .site-footer-note {
   max-width: 36rem;
   margin: 0 0 1.5rem;
-  color: #b7d8e4;
+  color: #cdeeff;
   font-size: 0.95rem;
 }
 
@@ -444,7 +473,7 @@ button[data-testid="compare-play"][aria-pressed="true"] {
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #8fb8c6;
+  color: #b3e4f5;
 }
 
 .site-footer-sources {
@@ -464,7 +493,7 @@ button[data-testid="compare-play"][aria-pressed="true"] {
 }
 
 .site-footer-sources a {
-  color: #8fe0f5;
+  color: #bde8fa;
 }
 
 .site-footer-sources a:hover {
