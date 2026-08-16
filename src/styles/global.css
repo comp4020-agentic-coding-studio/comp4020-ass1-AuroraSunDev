@@ -621,7 +621,29 @@ button:focus-visible {
  */
 .globe-tail {
   position: relative;
-  height: calc(52vh - 200px);
+  height: calc(52vh - 250px);
+}
+
+/*
+ * The footer's green, reaching 20px up into the sky.
+ *
+ * The ramp is one gradient split across two elements, so it has to be written
+ * as one: both halves describe the same 164px run from space to teal, and the
+ * footer's copy starts 20px above its own top edge (a negative colour stop) to
+ * pick up exactly where this leaves off. Two independent fades meeting at the
+ * boundary would have banded there, which is the thing being fixed.
+ *
+ * It sits above the stars in paint order, which is why their mask now clears
+ * before this begins — green over a starfield reads as fog, not as a horizon.
+ */
+.globe-tail::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 20px;
+  background: linear-gradient(to bottom, var(--space) 0, var(--header-bg) 164px);
 }
 
 /*
@@ -779,7 +801,7 @@ button:focus-visible {
  * and the other left, which is worse than leaving both.
  */
 .globe-stars[data-fade="out"] {
-  mask-image: linear-gradient(to bottom, #000 55%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 50%, transparent 88%);
 }
 
 /*
@@ -931,18 +953,22 @@ button:focus-visible {
  *
  * And the footer rises out of that space rather than being laid on top of it.
  * Deep navy to sea teal is a big enough jump in both hue and lightness that a
- * hard edge read as two blocks stacked, not as one page ending. The fade is
- * kept short — 7rem, against the approach's whole screen — because this is a
- * seam being dressed, not a journey: the footer is still furniture, and it
- * should still announce that the piece is over.
+ * hard edge read as two blocks stacked, not as one page ending.
+ *
+ * The ramp begins 20px above this element — hence the negative first stop —
+ * and runs 164px in total, of which 144px fall inside the footer. The tail's
+ * ::after draws the other 20px against the identical run, so the two halves
+ * are one continuous gradient rather than two fades that happen to meet.
+ * Still short against the approach's whole screen: this is a seam being
+ * dressed, not a journey, and the footer should still say the piece is over.
  */
 .globe-section + .site-footer {
   margin-top: 0;
 
   /* Room for the fade to finish before the first line of text sits on it. */
-  padding-top: 4.5rem;
+  padding-top: 5rem;
   background:
-    linear-gradient(to bottom, var(--space), var(--header-bg) 7rem)
+    linear-gradient(to bottom, var(--space) -20px, var(--header-bg) 144px)
     var(--header-bg);
 }
 
@@ -989,7 +1015,11 @@ button:focus-visible {
  */
 .site-footer-credit {
   margin: 1.75rem 0 0;
-  color: #a8d6e6;
+
+  /* Was #a8d6e6, which measured 4.10:1 on the footer — under AA for text this
+     size. This is the next step up that clears it while still reading as the
+     quietest line in the footer. */
+  color: #b8e2f2;
   font-size: 0.8rem;
 }
 
