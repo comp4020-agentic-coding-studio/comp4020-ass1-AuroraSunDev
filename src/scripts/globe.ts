@@ -1,7 +1,10 @@
 // The epilogue globe. Scroll position drives how big it is; a clock drives how
-// fast it turns and where in the year it is. The two are linked: the further in
-// you scroll, the faster the planet spins, so the seasons blur past as it
-// arrives — which is the whole point of the section.
+// fast it turns and where in the year it is. The two are linked, inversely: a
+// distant speck races through its years, and it settles as it comes at you, so
+// what starts as centuries flickering past ends as one planet turning slowly.
+// That deceleration is the point of the section — the timeline above ran five
+// hundred years in a few seconds, and this is the same clock slowing down to
+// something a person can stand and watch.
 //
 // Everything visual is CSS. This file only publishes three numbers:
 //   --globe-progress  0..1  how far through the section (on the section)
@@ -12,6 +15,7 @@
 // only read the position, never fight it.
 
 const section = document.querySelector<HTMLElement>('[data-testid="globe-section"]');
+const approach = document.querySelector<HTMLElement>('[data-testid="globe-approach"]');
 const globe = document.querySelector<HTMLElement>('[data-testid="globe"]');
 const layers = [...document.querySelectorAll<HTMLElement>(".globe-map")];
 
@@ -24,11 +28,12 @@ function clamp(value: number, low: number, high: number): number {
 if (section && globe && layers.length > 0) {
   const SEASONS = layers.length;
 
-  // Turns per second. The floor is what it does while still far away — slow
-  // enough to read as a planet rather than a spinning ball; the ceiling is what
-  // it reaches once it fills the frame.
-  const SLOWEST = 0.035;
-  const FASTEST = 0.4;
+  // Turns per second, and the small one is the *end* of the range, not the
+  // start: a speck spins hard, and it settles as it comes at you. Coming to
+  // rest is what makes the arrival land — a planet still racing once it fills
+  // the frame reads as a loading spinner.
+  const SPIN_FAR = 0.42;
+  const SPIN_NEAR = 0.03;
 
   let progress = 0;
   let spin = 0;
@@ -37,10 +42,19 @@ if (section && globe && layers.length > 0) {
   let rafId: number | null = null;
 
   function readProgress(): void {
+    // Under reduced motion the progress value is pinned to 1 by hand and the
+    // section is no longer tall enough to derive one from — measuring here
+    // would overwrite that with 0 and take the globe's opacity down with it.
+    if (reduceMotion.matches) return;
+
     const rect = section!.getBoundingClientRect();
-    // How far the sticky stage can travel before the section leaves.
-    const travel = rect.height - window.innerHeight;
-    progress = travel > 0 ? clamp(-rect.top / travel, 0, 1) : 0;
+    // The approach band is scrolled through before the stage pins, so it is
+    // subtracted from both ends: progress is 0 at the moment the stage takes
+    // the viewport, not at the top of the section. Measured off the element
+    // rather than repeating the height here, so changing it in CSS is enough.
+    const lead = approach?.offsetHeight ?? 0;
+    const travel = rect.height - lead - window.innerHeight;
+    progress = travel > 0 ? clamp((-rect.top - lead) / travel, 0, 1) : 0;
     section!.style.setProperty("--globe-progress", progress.toFixed(4));
   }
 
@@ -64,9 +78,9 @@ if (section && globe && layers.length > 0) {
 
     readProgress();
 
-    const turnsPerSecond = SLOWEST + progress * (FASTEST - SLOWEST);
+    const turnsPerSecond = SPIN_FAR + progress * (SPIN_NEAR - SPIN_FAR);
     spin = (spin + turnsPerSecond * elapsed) % 1;
-    // One turn is one year, so the seasons accelerate with the spin.
+    // One turn is one year, so the seasons slow down with the spin.
     yearPhase = (yearPhase + turnsPerSecond * elapsed * SEASONS) % SEASONS;
 
     globe!.style.setProperty("--spin", spin.toFixed(5));

@@ -111,11 +111,33 @@ button:focus-visible {
 /* Hero */
 
 /*
- * Text only — the crowd artwork that used to sit here now carries the intro
- * splash on the home page, and repeating it would blunt both.
+ * Stacked on a phone — heading, text, then the planet — and two columns from
+ * the point where a column of text would otherwise run too wide to read
+ * comfortably anyway. The globe takes the narrower side: it is the opening
+ * image, not the subject.
  */
 .hero {
+  display: grid;
+  gap: 2rem;
   padding-block: 3.5rem 2.5rem;
+}
+
+@media (width >= 52rem) {
+  .hero {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 3rem;
+    align-items: center;
+  }
+
+  /* Explicit placement rather than `order`, because these two are the whole
+     grid: naming the cells says what the layout is in one line. */
+  .hero-globe {
+    grid-area: 1 / 1;
+  }
+
+  .hero-copy {
+    grid-area: 1 / 2;
+  }
 }
 
 .hero h1 {
@@ -131,6 +153,41 @@ button:focus-visible {
   margin: 0;
   color: var(--muted);
   font-size: 1.1rem;
+}
+
+/*
+ * A still Earth. It is capped in rem as well as vw so it stays an opening
+ * image on a wide monitor instead of growing into a poster, and centred in its
+ * cell so the two columns balance whichever is taller.
+ */
+.hero-globe {
+  display: grid;
+  place-items: center;
+}
+
+.hero-globe-body {
+  position: relative;
+  width: min(74vw, 20rem);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+
+  /* The same atmosphere as the epilogue globe, sized for this one. */
+  box-shadow:
+    0 0 34px rgb(120 190 255 / 40%),
+    0 0 12px rgb(190 225 255 / 32%);
+}
+
+/*
+ * A single 2:1 map filling the sphere. The epilogue's version is four copies
+ * wide so it can slide without a seam; this one never moves, so it needs none
+ * of that.
+ */
+.hero-globe-map {
+  position: absolute;
+  inset: 0;
+  background-position: 38% center;
+  background-size: 200% 100%;
 }
 
 /* Place sections */
@@ -461,18 +518,64 @@ button:focus-visible {
  * same picture while breaking keyboard scrolling, trackpad momentum and every
  * phone, none of which is worth an effect.
  *
- * --globe-progress runs 0 to 1 across the section and is written by globe.ts.
- * Everything below is a function of it, so there is one source of truth for
- * "how far in are we" and no two things can disagree.
+ * It runs in two movements. First the approach: a screen of sky that drains
+ * from the page's own pale blue down into deep space, with the stars coming up
+ * through it. Only once that has finished does the stage pin and the globe
+ * begin to surface. --globe-progress is 0 at the moment the stage pins and 1
+ * when it lets go, so it measures the second movement only — everything the
+ * globe does is a function of it, and the approach is pure CSS with no state
+ * of its own to disagree with.
  */
 .globe-section {
   --globe-progress: 0;
 
+  /* Not black. Space in every photograph that matters is a very deep blue, and
+     black beside the page's pale blue reads as a hole rather than a sky. */
+  --space: #050f2b;
+
   position: relative;
-  height: 320vh;
-  background: #04070f;
+  height: 390vh;
+  background: var(--space);
 }
 
+/*
+ * The approach. The compare section above ends on pale blue and this one is
+ * deep space; cutting straight between them read as two pages stapled
+ * together. A screen of gradient turns it into a single move. It costs a
+ * screen of scrolling and buys the one transition on this page that had to be
+ * felt rather than looked at.
+ */
+.globe-approach {
+  position: relative;
+  height: 90vh;
+  background: linear-gradient(
+    to bottom,
+    var(--page-bg) 0%,
+    #d3ecf6 14%,
+    #8fb9d2 34%,
+    #3f6c98 56%,
+    #14305e 76%,
+    var(--space) 94%
+  );
+}
+
+/*
+ * The same stars as the stage below, but only where the sky has gone dark
+ * enough to hold them — masked in over the lower half, so they arrive with the
+ * darkness rather than switching on when the stage takes over.
+ */
+.globe-approach-stars {
+  position: absolute;
+  inset: 0;
+  mask-image: linear-gradient(to bottom, transparent 30%, #000 88%);
+}
+
+/*
+ * The stage carries the ground colour and a very faint diffuse glow across one
+ * diagonal — far too weak to read as a nebula, but enough that the sky is not
+ * perfectly flat. The star layers above it are transparent so this shows
+ * through.
+ */
 .globe-stage {
   position: sticky;
   top: 0;
@@ -480,33 +583,145 @@ button:focus-visible {
   place-items: center;
   height: 100vh;
   overflow: hidden;
+  background:
+    radial-gradient(120% 40% at 32% 62%, rgb(108 146 216 / 11%), transparent 72%)
+      var(--space);
 }
 
-/* Star field, drawn rather than downloaded: three tiles of dots, each
-   repeating on its own grid so no pattern is obvious. */
-.globe-space {
+/*
+ * Star field, drawn rather than downloaded. Three tiles at different scales,
+ * each with its own population — 52 faint, 26 mid, 11 bright — at positions
+ * from a seeded random walk rather than placed by hand, because anything placed
+ * by eye comes out evenly spread and a real sky is not. Size, colour and
+ * brightness all vary within each layer: a field of identical dots reads as a
+ * texture, and five of them read as nothing at all, which is what this was.
+ * The three tile sizes are deliberately not multiples of each other, so the
+ * layers never line up into a grid you can see.
+ */
+.globe-space,
+.globe-approach-stars {
   position: absolute;
   inset: 0;
-  background-color: #04070f;
   background-image:
-    radial-gradient(1px 1px at 18% 24%, rgb(255 255 255 / 90%), transparent 60%),
-    radial-gradient(1px 1px at 71% 12%, rgb(200 225 255 / 75%), transparent 60%),
-    radial-gradient(1px 1px at 43% 67%, rgb(255 255 255 / 65%), transparent 60%),
-    radial-gradient(2px 2px at 88% 48%, rgb(255 255 255 / 55%), transparent 60%),
-    radial-gradient(1px 1px at 9% 82%, rgb(220 235 255 / 70%), transparent 60%);
-  background-size:
-    320px 240px,
-    470px 350px,
-    260px 300px,
-    610px 520px,
-    390px 430px;
+    radial-gradient(1px 1px at 21.1% 21.0%, rgb(255 255 255 / 60%), transparent 62%),
+    radial-gradient(1px 1px at 75.9% 70.5%, rgb(255 255 255 / 50%), transparent 62%),
+    radial-gradient(1px 1px at 92.5% 88.9%, rgb(198 220 255 / 74%), transparent 62%),
+    radial-gradient(1px 1px at 73.0% 28.4%, rgb(255 255 255 / 44%), transparent 62%),
+    radial-gradient(1px 1px at 95.6% 90.6%, rgb(255 255 255 / 69%), transparent 62%),
+    radial-gradient(1px 1px at 32.9% 13.6%, rgb(198 220 255 / 53%), transparent 62%),
+    radial-gradient(1px 1px at 88.2% 72.3%, rgb(198 220 255 / 66%), transparent 62%),
+    radial-gradient(1px 1px at 15.3% 13.1%, rgb(255 236 205 / 73%), transparent 62%),
+    radial-gradient(1px 1px at 38.6% 79.6%, rgb(255 255 255 / 69%), transparent 62%),
+    radial-gradient(1px 1px at 63.5% 30.8%, rgb(168 200 255 / 68%), transparent 62%),
+    radial-gradient(1px 1px at 3.0% 90.8%, rgb(198 220 255 / 62%), transparent 62%),
+    radial-gradient(1px 1px at 55.2% 31.6%, rgb(255 255 255 / 64%), transparent 62%),
+    radial-gradient(1px 1px at 15.5% 53.4%, rgb(255 255 255 / 47%), transparent 62%),
+    radial-gradient(1px 1px at 41.7% 3.1%, rgb(255 255 255 / 60%), transparent 62%),
+    radial-gradient(1px 1px at 77.6% 27.7%, rgb(255 255 255 / 40%), transparent 62%),
+    radial-gradient(1px 1px at 68.3% 77.3%, rgb(168 200 255 / 51%), transparent 62%),
+    radial-gradient(1px 1px at 70.3% 77.9%, rgb(255 255 255 / 68%), transparent 62%),
+    radial-gradient(1px 1px at 57.8% 29.7%, rgb(255 255 255 / 44%), transparent 62%),
+    radial-gradient(1px 1px at 19.1% 75.4%, rgb(255 255 255 / 45%), transparent 62%),
+    radial-gradient(1px 1px at 55.3% 23.2%, rgb(168 200 255 / 60%), transparent 62%),
+    radial-gradient(1px 1px at 73.8% 4.3%, rgb(255 255 255 / 67%), transparent 62%),
+    radial-gradient(1px 1px at 22.9% 90.3%, rgb(168 200 255 / 59%), transparent 62%),
+    radial-gradient(1px 1px at 7.7% 92.2%, rgb(255 255 255 / 58%), transparent 62%),
+    radial-gradient(1px 1px at 16.5% 15.4%, rgb(255 236 205 / 40%), transparent 62%),
+    radial-gradient(1px 1px at 76.4% 70.3%, rgb(168 200 255 / 52%), transparent 62%),
+    radial-gradient(1px 1px at 14.0% 22.7%, rgb(198 220 255 / 66%), transparent 62%),
+    radial-gradient(1px 1px at 43.3% 89.5%, rgb(198 220 255 / 55%), transparent 62%),
+    radial-gradient(1px 1px at 79.6% 42.1%, rgb(255 255 255 / 67%), transparent 62%),
+    radial-gradient(1px 1px at 47.8% 44.6%, rgb(168 200 255 / 72%), transparent 62%),
+    radial-gradient(1px 1px at 4.1% 42.3%, rgb(255 255 255 / 64%), transparent 62%),
+    radial-gradient(1px 1px at 98.6% 79.6%, rgb(255 255 255 / 60%), transparent 62%),
+    radial-gradient(1px 1px at 54.8% 31.4%, rgb(255 236 205 / 58%), transparent 62%),
+    radial-gradient(1px 1px at 5.7% 90.9%, rgb(255 236 205 / 44%), transparent 62%),
+    radial-gradient(1px 1px at 34.7% 75.8%, rgb(255 255 255 / 45%), transparent 62%),
+    radial-gradient(1px 1px at 37.4% 41.4%, rgb(255 255 255 / 42%), transparent 62%),
+    radial-gradient(1px 1px at 32.0% 16.4%, rgb(168 200 255 / 50%), transparent 62%),
+    radial-gradient(1px 1px at 74.5% 31.8%, rgb(198 220 255 / 72%), transparent 62%),
+    radial-gradient(1px 1px at 7.6% 63.7%, rgb(255 255 255 / 62%), transparent 62%),
+    radial-gradient(1px 1px at 11.3% 31.0%, rgb(255 236 205 / 62%), transparent 62%),
+    radial-gradient(1px 1px at 6.0% 50.9%, rgb(255 236 205 / 44%), transparent 62%),
+    radial-gradient(1px 1px at 37.3% 74.9%, rgb(255 236 205 / 67%), transparent 62%),
+    radial-gradient(1px 1px at 28.3% 21.8%, rgb(255 255 255 / 74%), transparent 62%),
+    radial-gradient(1px 1px at 98.1% 79.7%, rgb(255 236 205 / 51%), transparent 62%),
+    radial-gradient(1px 1px at 12.8% 16.9%, rgb(255 255 255 / 64%), transparent 62%),
+    radial-gradient(1px 1px at 66.7% 43.4%, rgb(255 236 205 / 42%), transparent 62%),
+    radial-gradient(1px 1px at 16.4% 52.8%, rgb(255 236 205 / 77%), transparent 62%),
+    radial-gradient(1px 1px at 87.1% 65.3%, rgb(255 255 255 / 72%), transparent 62%),
+    radial-gradient(1px 1px at 97.4% 30.7%, rgb(168 200 255 / 44%), transparent 62%),
+    radial-gradient(1px 1px at 24.3% 21.0%, rgb(255 255 255 / 70%), transparent 62%),
+    radial-gradient(1px 1px at 45.6% 23.0%, rgb(198 220 255 / 70%), transparent 62%),
+    radial-gradient(1px 1px at 90.0% 76.0%, rgb(255 255 255 / 62%), transparent 62%),
+    radial-gradient(1px 1px at 36.6% 79.1%, rgb(168 200 255 / 61%), transparent 62%);
+  background-size: 760px 620px;
+}
+
+.globe-space::before,
+.globe-approach-stars::before,
+.globe-space::after,
+.globe-approach-stars::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.globe-space::before,
+.globe-approach-stars::before {
+  background-image:
+    radial-gradient(1px 1px at 18.1% 72.4%, rgb(255 214 205 / 90%), transparent 60%),
+    radial-gradient(2px 2px at 56.9% 41.8%, rgb(168 200 255 / 92%), transparent 60%),
+    radial-gradient(1px 1px at 55.0% 98.7%, rgb(255 214 205 / 80%), transparent 60%),
+    radial-gradient(2px 2px at 66.3% 85.6%, rgb(255 214 205 / 85%), transparent 60%),
+    radial-gradient(1px 1px at 63.9% 78.6%, rgb(255 255 255 / 77%), transparent 60%),
+    radial-gradient(2px 2px at 2.9% 28.5%, rgb(198 220 255 / 74%), transparent 60%),
+    radial-gradient(2px 2px at 10.6% 20.0%, rgb(255 255 255 / 95%), transparent 60%),
+    radial-gradient(1px 1px at 20.2% 91.8%, rgb(255 255 255 / 81%), transparent 60%),
+    radial-gradient(2px 2px at 2.5% 94.6%, rgb(255 255 255 / 89%), transparent 60%),
+    radial-gradient(1px 1px at 10.3% 17.7%, rgb(198 220 255 / 87%), transparent 60%),
+    radial-gradient(1px 1px at 91.6% 72.6%, rgb(255 214 205 / 79%), transparent 60%),
+    radial-gradient(1px 1px at 21.5% 57.5%, rgb(198 220 255 / 78%), transparent 60%),
+    radial-gradient(1px 1px at 90.4% 71.3%, rgb(255 255 255 / 95%), transparent 60%),
+    radial-gradient(2px 2px at 49.2% 50.7%, rgb(255 255 255 / 81%), transparent 60%),
+    radial-gradient(1px 1px at 78.6% 59.7%, rgb(198 220 255 / 88%), transparent 60%),
+    radial-gradient(2px 2px at 1.5% 12.9%, rgb(255 214 205 / 79%), transparent 60%),
+    radial-gradient(2px 2px at 92.2% 94.9%, rgb(255 214 205 / 78%), transparent 60%),
+    radial-gradient(2px 2px at 82.8% 74.6%, rgb(198 220 255 / 76%), transparent 60%),
+    radial-gradient(2px 2px at 28.6% 12.3%, rgb(198 220 255 / 90%), transparent 60%),
+    radial-gradient(1px 1px at 94.2% 38.4%, rgb(255 214 205 / 96%), transparent 60%),
+    radial-gradient(2px 2px at 17.8% 50.7%, rgb(255 236 205 / 71%), transparent 60%),
+    radial-gradient(1px 1px at 7.5% 93.7%, rgb(168 200 255 / 90%), transparent 60%),
+    radial-gradient(2px 2px at 18.1% 64.4%, rgb(255 255 255 / 86%), transparent 60%),
+    radial-gradient(1px 1px at 13.4% 43.9%, rgb(255 214 205 / 84%), transparent 60%),
+    radial-gradient(2px 2px at 86.5% 37.4%, rgb(168 200 255 / 73%), transparent 60%),
+    radial-gradient(2px 2px at 4.9% 51.5%, rgb(255 214 205 / 80%), transparent 60%);
+  background-size: 1190px 940px;
+}
+
+.globe-space::after,
+.globe-approach-stars::after {
+  background-image:
+    radial-gradient(3px 3px at 30.3% 39.3%, rgb(255 255 255 / 97%), transparent 55%),
+    radial-gradient(3px 3px at 13.1% 13.7%, rgb(198 220 255 / 98%), transparent 55%),
+    radial-gradient(3px 3px at 92.1% 31.8%, rgb(255 255 255 / 90%), transparent 55%),
+    radial-gradient(3px 3px at 90.4% 76.8%, rgb(255 255 255 / 92%), transparent 55%),
+    radial-gradient(2px 2px at 42.5% 29.8%, rgb(255 236 205 / 89%), transparent 55%),
+    radial-gradient(3px 3px at 16.2% 26.9%, rgb(255 255 255 / 96%), transparent 55%),
+    radial-gradient(3px 3px at 76.7% 10.1%, rgb(255 255 255 / 95%), transparent 55%),
+    radial-gradient(3px 3px at 54.3% 86.1%, rgb(255 255 255 / 97%), transparent 55%),
+    radial-gradient(3px 3px at 86.3% 93.3%, rgb(198 220 255 / 98%), transparent 55%),
+    radial-gradient(2px 2px at 59.0% 15.3%, rgb(255 255 255 / 96%), transparent 55%),
+    radial-gradient(3px 3px at 47.6% 46.2%, rgb(255 255 255 / 98%), transparent 55%);
+  background-size: 1630px 1310px;
 }
 
 /*
  * Sized off the smaller viewport axis so it can never be taller than the stage,
- * then scaled by scroll. It starts as a distant speck and ends filling the
- * frame. The glow grows with it — an atmosphere reads as further away when it
- * is tight to the edge.
+ * then scaled by scroll. It surfaces out of nothing rather than being there
+ * from the start: the sky has to be the whole picture for a moment first, or
+ * the arrival is not an arrival. It ends filling the frame, and the glow grows
+ * with it — an atmosphere reads as further away when it is tight to the edge.
  */
 .globe {
   position: relative;
@@ -514,7 +729,8 @@ button:focus-visible {
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: 50%;
-  scale: calc(0.14 + var(--globe-progress) * 1.06);
+  opacity: clamp(0, calc(var(--globe-progress) * 10), 1);
+  scale: calc(0.06 + var(--globe-progress) * 1.14);
   box-shadow:
     0 0 calc(8px + var(--globe-progress) * 70px) rgb(120 190 255 / 45%),
     0 0 calc(4px + var(--globe-progress) * 24px) rgb(190 225 255 / 35%);
@@ -598,6 +814,13 @@ button:focus-visible {
     height: auto;
   }
 
+  /* The colour change is worth keeping — it is a gradient, not motion — but a
+     whole screen of it is only there to be scrolled through, so it shrinks to
+     a band that does the same job in one glance. */
+  .globe-approach {
+    height: 9rem;
+  }
+
   .globe-stage {
     position: static;
     height: auto;
@@ -607,6 +830,7 @@ button:focus-visible {
 
   .globe {
     width: min(58vw, 22rem);
+    opacity: 1;
     scale: 1;
   }
 

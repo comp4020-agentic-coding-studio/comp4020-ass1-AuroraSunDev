@@ -16,15 +16,41 @@ import { assetUrl } from "../lib/asset-url";
     </nav>
   </header>
   <main>
+    {/*
+      The words come first in the source and sit second on screen. Reading
+      order should open on the h1, but the eye should meet the planet first,
+      and CSS grid can disagree with the DOM about that without either being
+      wrong. On a phone the two agree again: heading, then text, then the
+      globe underneath.
+    */}
     <section class="hero">
-      <h1>When Humans Vanish</h1>
-      <p data-testid="intro" class="hero-intro">
-        Human absence doesn't land on every place equally. The more a place's
-        condition depends on work that never stops, the faster it responds once
-        that work does. Scrub each place's own timeline to see how — then put
-        any of them side by side at the same moment, and look at where five
-        hundred years leaves all four.
-      </p>
+      <div class="hero-copy">
+        <h1>When Humans Vanish</h1>
+        <p data-testid="intro" class="hero-intro">
+          Human absence doesn't land on every place equally. The more a place's
+          condition depends on work that never stops, the faster it responds
+          once that work does. Scrub each place's own timeline to see how —
+          then put any of them side by side at the same moment, and look at
+          where five hundred years leaves all four.
+        </p>
+      </div>
+
+      {/*
+        The same planet that closes the page, at the size it starts from —
+        one still frame of it, built out of the same two layers so the two
+        ends of the page are recognisably the same object rather than two
+        different pictures of an Earth.
+      */}
+      <div class="hero-globe" aria-hidden="true">
+        <div class="hero-globe-body" data-testid="hero-globe">
+          <div
+            class="hero-globe-map"
+            style={`background-image: url(${assetUrl("globe/summer.jpg")})`}
+          >
+          </div>
+          <div class="globe-shade"></div>
+        </div>
+      </div>
     </section>
 
     {PLACES.map((place) => <PlaceSection place={place} />)}
@@ -112,6 +138,15 @@ import { assetUrl } from "../lib/asset-url";
     would only add noise for a screen reader — the words below are the content.
   */}
   <section class="globe-section" data-testid="globe-section">
+    {/*
+      The lead-in. Purely a change of sky, so it carries no content and is
+      hidden from assistive tech entirely — there is nothing here to announce,
+      and the words below are unaffected by it.
+    */}
+    <div class="globe-approach" data-testid="globe-approach" aria-hidden="true">
+      <div class="globe-approach-stars"></div>
+    </div>
+
     <div class="globe-stage">
       <div class="globe-space" aria-hidden="true"></div>
 
