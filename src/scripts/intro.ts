@@ -8,7 +8,12 @@ const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const BOOM_MS = REDUCED ? 400 : 3_000;
 const WHITE_MS = REDUCED ? 200 : 600;
-const LINE_MS = REDUCED ? 1_600 : 2_800;
+
+// The line is the only text in the sequence and it gets read once, so it is
+// timed for reading rather than for pacing: the keyframes hold it fully opaque
+// for the middle ~64% of this, which is about 2.9s — comfortably longer than
+// the ~1.5s it takes to read five words, with the rest spent fading.
+const LINE_MS = REDUCED ? 2_600 : 4_500;
 
 const EXPLAINER = assetUrl("explainer.html");
 

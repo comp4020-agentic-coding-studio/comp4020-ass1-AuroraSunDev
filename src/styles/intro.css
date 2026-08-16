@@ -187,19 +187,24 @@
 }
 
 .intro[data-phase="line"] .intro-line {
-  animation: intro-line var(--line-duration, 2800ms) ease-in-out forwards;
+  animation: intro-line var(--line-duration, 4500ms) ease-in-out forwards;
 }
 
+/*
+ * Weighted for reading, not for symmetry: in fast, held for the middle ~64% of
+ * the run, then out. The fade-in is short because a line you are still waiting
+ * to see is dead time; the hold is what the visitor actually reads in.
+ */
 @keyframes intro-line {
   0% {
     opacity: 0;
   }
 
-  28% {
+  14% {
     opacity: 1;
   }
 
-  68% {
+  78% {
     opacity: 1;
   }
 
@@ -239,7 +244,7 @@
 
 .intro-nav a:hover,
 .intro-nav a:focus-visible {
-  color: #0b5fff;
+  color: #0d7377;
   text-decoration: underline;
 }
 

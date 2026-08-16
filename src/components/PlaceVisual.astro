@@ -41,6 +41,26 @@ const dimensions = FRAME_DIMENSIONS[place.id] ?? { width: 1000, height: 666 };
     decoding="async"
     alt={`${place.name}: ${stop.label}`}
   />
-  <p class="place-visual-label" data-testid="place-visual-label">{stop.label}</p>
-  <p class="place-visual-description" data-testid="place-visual-description">{stop.description}</p>
+  {/*
+    Each caption line is a slot holding the live text plus a hidden copy of
+    every other caption this place can show, all stacked in one grid cell. The
+    cell is therefore always as tall as this place's tallest caption, so the
+    slider underneath cannot move when a longer or shorter one swaps in. Doing
+    it with the real strings rather than a min-height means it stays correct at
+    any viewport and survives an edit to the copy.
+  */}
+  <div class="place-visual-slot">
+    <p class="place-visual-label" data-testid="place-visual-label">{stop.label}</p>
+    {place.stops.map((sizer) => (
+      <p class="place-visual-label place-visual-sizer" aria-hidden="true">{sizer.label}</p>
+    ))}
+  </div>
+  <div class="place-visual-slot">
+    <p class="place-visual-description" data-testid="place-visual-description">{stop.description}</p>
+    {place.stops.map((sizer) => (
+      <p class="place-visual-description place-visual-sizer" aria-hidden="true">
+        {sizer.description}
+      </p>
+    ))}
+  </div>
 </div>

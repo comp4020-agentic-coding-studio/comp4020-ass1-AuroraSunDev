@@ -1,10 +1,18 @@
+/*
+ * The palette is the blue-green of the planet seen from outside it — ocean
+ * teal for anything interactive, deep water for the header and footer. The
+ * paper tones stay warm, because the artwork is drawn on cream and a cool page
+ * would fight it. Every pairing below clears 4.5:1; the accent is 5.5:1 on the
+ * page and the header text 13:1 on its own ground.
+ */
 :root {
   --ink: #1a1a1a;
-  --muted: #4a4a4a;
-  --accent: #0b5fff;
-  --header-bg: #12181f;
+  --muted: #44514f;
+  --accent: #0d7377;
+  --accent-light: #7fd6cf; /* accent legible on the dark header/footer */
+  --header-bg: #0b2b30;
   --header-fg: #f4f2ec;
-  --rule: #e2ddd2;
+  --rule: #dbe3e0;
   --page-width: 78rem;
   --wide: 64rem;
 }
@@ -75,7 +83,7 @@ button:focus-visible {
 }
 
 .site-header-brand:hover {
-  color: #8ecbff;
+  color: var(--accent-light);
 }
 
 /* Hero */
@@ -171,7 +179,7 @@ button:focus-visible {
   margin: 0.6rem 0 0;
   padding: 0;
   list-style: none;
-  color: #8a8a8a;
+  color: #7c8b88;
   font-size: 0.65rem;
   font-variant-numeric: tabular-nums;
 }
@@ -233,6 +241,27 @@ button:focus-visible {
   border-radius: 0.4rem;
 }
 
+/*
+ * Holds the live caption and a hidden copy of every caption this place can
+ * show, all in one grid cell, so the row is always as tall as the longest of
+ * them. Without this the caption grows a line as you drag and the slider below
+ * it walks up and down under the cursor.
+ */
+.place-visual-slot {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+}
+
+.place-visual-slot > * {
+  grid-area: 1 / 1;
+}
+
+.place-visual-sizer {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .place-visual-label {
   margin: 0.75rem 0 0.25rem;
   font-weight: 600;
@@ -266,7 +295,7 @@ button:focus-visible {
   flex-wrap: wrap;
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--rule);
   border-radius: 0.5rem;
 }
 
@@ -279,6 +308,11 @@ button:focus-visible {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+/* Otherwise these stay the OS default blue and read as a different palette. */
+.compare-section fieldset input[type="checkbox"] {
+  accent-color: var(--accent);
 }
 
 .compare-grid {
@@ -389,7 +423,7 @@ button[data-testid="compare-play"][aria-pressed="true"] {
 .site-footer-note {
   max-width: 36rem;
   margin: 0 0 1.5rem;
-  color: #c7c2b6;
+  color: #b6c6c2;
   font-size: 0.95rem;
 }
 
@@ -398,7 +432,7 @@ button[data-testid="compare-play"][aria-pressed="true"] {
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #9a958a;
+  color: #8aa19c;
 }
 
 .site-footer-sources {
@@ -418,7 +452,7 @@ button[data-testid="compare-play"][aria-pressed="true"] {
 }
 
 .site-footer-sources a {
-  color: #cfe4ff;
+  color: #a9dfd8;
 }
 
 .site-footer-sources a:hover {
