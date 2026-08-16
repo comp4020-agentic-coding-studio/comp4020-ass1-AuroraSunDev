@@ -35,6 +35,10 @@
   --header-fg: #f2fdff;
   --rule: #c9e6e2;
   --page-bg: #f0fdff; /* the palest of the logo's cyans */
+
+  /* Deep space, for the epilogue and for the footer that rises out of it. Not
+     black: black beside the page's pale blue reads as a hole rather than a sky. */
+  --space: #050f2b;
   --page-width: 78rem;
   --wide: 64rem;
 }
@@ -570,10 +574,6 @@ button:focus-visible {
 .globe-section {
   --globe-progress: 0;
 
-  /* Not black. Space in every photograph that matters is a very deep blue, and
-     black beside the page's pale blue reads as a hole rather than a sky. */
-  --space: #050f2b;
-
   position: relative;
   background: var(--space);
 }
@@ -612,10 +612,16 @@ button:focus-visible {
   height: 220vh;
 }
 
-/* Sky after the words, so the section doesn't end on the footer's edge. */
+/*
+ * Sky after the words, so the section doesn't end on the footer's edge.
+ * Written as the fraction minus a flat 100px rather than as a smaller
+ * fraction, because that is the adjustment that was asked for: it takes the
+ * same 100px off every viewport instead of taking more off tall screens and
+ * less off short ones.
+ */
 .globe-tail {
   position: relative;
-  height: 52vh;
+  height: calc(52vh - 100px);
 }
 
 /*
@@ -768,6 +774,15 @@ button:focus-visible {
 }
 
 /*
+ * And out again at the bottom. The footer's colour now fades up out of space,
+ * but the stars were still stopping dead on its top edge — one seam dressed
+ * and the other left, which is worse than leaving both.
+ */
+.globe-stars[data-fade="out"] {
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 96%);
+}
+
+/*
  * Sized off the smaller viewport axis so it can never be taller than the stage,
  * then scaled by scroll. It surfaces out of nothing rather than being there
  * from the start: the sky has to be the whole picture for a moment first, or
@@ -913,9 +928,22 @@ button:focus-visible {
  * The globe section ends on deep space, so the usual breathing room above the
  * footer would render as a bright band of page background between two dark
  * blocks — the one place on the page where the gap is worse than no gap.
+ *
+ * And the footer rises out of that space rather than being laid on top of it.
+ * Deep navy to sea teal is a big enough jump in both hue and lightness that a
+ * hard edge read as two blocks stacked, not as one page ending. The fade is
+ * kept short — 7rem, against the approach's whole screen — because this is a
+ * seam being dressed, not a journey: the footer is still furniture, and it
+ * should still announce that the piece is over.
  */
 .globe-section + .site-footer {
   margin-top: 0;
+
+  /* Room for the fade to finish before the first line of text sits on it. */
+  padding-top: 4.5rem;
+  background:
+    linear-gradient(to bottom, var(--space), var(--header-bg) 7rem)
+    var(--header-bg);
 }
 
 .site-footer-inner {
