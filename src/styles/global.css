@@ -451,34 +451,172 @@ button:focus-visible {
   color: #fff;
 }
 
-/* Closing question */
+/* Epilogue: the globe */
 
 /*
- * Set at reading width rather than the full page width: this is the one part of
- * the site that is the author talking, so it should read like prose, not like
- * another panel of the exhibit.
+ * A tall section with a stage stuck to the viewport inside it. Nothing about
+ * the scroll is intercepted — the page scrolls normally the whole way through —
+ * but for the length of this section what you see is one held frame, so the
+ * globe appears to grow in place. Hijacking the wheel would have produced the
+ * same picture while breaking keyboard scrolling, trackpad momentum and every
+ * phone, none of which is worth an effect.
+ *
+ * --globe-progress runs 0 to 1 across the section and is written by globe.ts.
+ * Everything below is a function of it, so there is one source of truth for
+ * "how far in are we" and no two things can disagree.
  */
-.closing-section {
-  max-width: 44rem;
-  margin: 4rem auto 0;
-  padding-top: 2.5rem;
-  border-top: 1px solid var(--rule);
+.globe-section {
+  --globe-progress: 0;
+
+  position: relative;
+  height: 320vh;
+  background: #04070f;
 }
 
-.closing-section h2 {
-  margin-bottom: 1.25rem;
-  color: var(--land);
+.globe-stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Star field, drawn rather than downloaded: three tiles of dots, each
+   repeating on its own grid so no pattern is obvious. */
+.globe-space {
+  position: absolute;
+  inset: 0;
+  background-color: #04070f;
+  background-image:
+    radial-gradient(1px 1px at 18% 24%, rgb(255 255 255 / 90%), transparent 60%),
+    radial-gradient(1px 1px at 71% 12%, rgb(200 225 255 / 75%), transparent 60%),
+    radial-gradient(1px 1px at 43% 67%, rgb(255 255 255 / 65%), transparent 60%),
+    radial-gradient(2px 2px at 88% 48%, rgb(255 255 255 / 55%), transparent 60%),
+    radial-gradient(1px 1px at 9% 82%, rgb(220 235 255 / 70%), transparent 60%);
+  background-size:
+    320px 240px,
+    470px 350px,
+    260px 300px,
+    610px 520px,
+    390px 430px;
+}
+
+/*
+ * Sized off the smaller viewport axis so it can never be taller than the stage,
+ * then scaled by scroll. It starts as a distant speck and ends filling the
+ * frame. The glow grows with it — an atmosphere reads as further away when it
+ * is tight to the edge.
+ */
+.globe {
+  position: relative;
+  width: min(72vw, 72vh);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  scale: calc(0.14 + var(--globe-progress) * 1.06);
+  box-shadow:
+    0 0 calc(8px + var(--globe-progress) * 70px) rgb(120 190 255 / 45%),
+    0 0 calc(4px + var(--globe-progress) * 24px) rgb(190 225 255 / 35%);
+}
+
+/*
+ * Four copies of the map wide, with the tile set to a quarter of that — so one
+ * tile is exactly twice the globe's width, which is the 2:1 shape the source
+ * images are. Sliding this by half its own width moves it exactly one tile, so
+ * the spin loops with no seam wherever it happens to be when you arrive.
+ */
+.globe-map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 400%;
+  background-repeat: repeat-x;
+  background-size: 25% 100%;
+  opacity: 0;
+  translate: calc(var(--spin, 0) * -50%) 0;
+}
+
+/*
+ * What turns a flat rectangle into a planet: a lit limb on one side, terminator
+ * shadow on the other, and a rim that keeps the edge from looking cut out.
+ */
+.globe-shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgb(255 255 255 / 22%), transparent 46%),
+    radial-gradient(circle at 68% 72%, rgb(0 6 20 / 78%), transparent 62%);
+  box-shadow: inset 0 0 30px 6px rgb(0 6 20 / 55%);
+}
+
+/*
+ * Held back until the globe is most of the way up, so the question lands on a
+ * planet that already fills the view rather than competing with it on the way.
+ */
+.globe-copy {
+  position: relative;
+  max-width: 40rem;
+  margin: 0 1.5rem;
+  padding: 1.75rem 2rem;
+  border-radius: 1rem;
+  background: rgb(4 10 22 / 72%);
+  color: #eaf6ff;
+  text-align: center;
+  opacity: clamp(0, calc((var(--globe-progress) - 0.55) * 3.4), 1);
+  backdrop-filter: blur(6px);
+}
+
+.globe-copy h2 {
+  margin: 0 0 1rem;
+  color: #fff;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.6rem;
 }
 
-.closing-section p {
-  font-size: 1.05rem;
+.globe-copy p {
+  margin: 0 0 0.9rem;
+  font-size: 1.02rem;
 }
 
-.closing-section-invite {
-  color: var(--muted);
+.globe-copy-invite {
+  margin-bottom: 0;
+  color: #b6d9ef;
   font-style: italic;
+}
+
+/*
+ * Reduced motion keeps the picture and drops the movement: the globe sits at
+ * one readable size, the words are simply there, and globe.ts never starts its
+ * loop. Scroll-linked growth is still autonomous motion as far as this setting
+ * is concerned, so it goes too.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .globe-section {
+    height: auto;
+  }
+
+  .globe-stage {
+    position: static;
+    height: auto;
+    padding: 4rem 0;
+    gap: 2.5rem;
+  }
+
+  .globe {
+    width: min(58vw, 22rem);
+    scale: 1;
+  }
+
+  .globe-map[data-season="summer"] {
+    opacity: 1;
+  }
+
+  .globe-copy {
+    opacity: 1;
+  }
 }
 
 /* Site footer */
@@ -488,6 +626,15 @@ button:focus-visible {
   padding: 2.5rem 2rem 3rem;
   background: var(--header-bg);
   color: var(--header-fg);
+}
+
+/*
+ * The globe section ends on deep space, so the usual breathing room above the
+ * footer would render as a bright band of page background between two dark
+ * blocks — the one place on the page where the gap is worse than no gap.
+ */
+.globe-section + .site-footer {
+  margin-top: 0;
 }
 
 .site-footer-inner {
@@ -526,10 +673,23 @@ button:focus-visible {
   }
 }
 
-.site-footer-sources a {
+/*
+ * Image credit, kept separate from the source list above: those are citations
+ * backing claims in the timeline, this is attribution for artwork. Merging
+ * them would imply the globe imagery is evidence for something.
+ */
+.site-footer-credit {
+  margin: 1.75rem 0 0;
+  color: #a8d6e6;
+  font-size: 0.8rem;
+}
+
+.site-footer-sources a,
+.site-footer-credit a {
   color: #bde8fa;
 }
 
-.site-footer-sources a:hover {
+.site-footer-sources a:hover,
+.site-footer-credit a:hover {
   color: #fff;
 }

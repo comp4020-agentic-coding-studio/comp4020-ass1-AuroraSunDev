@@ -6,6 +6,7 @@ import TimeSlider from "../components/TimeSlider.astro";
 import { PLACES } from "../data/places";
 import { SOURCES } from "../data/sources";
 import { getStateForPlace } from "../lib/interaction";
+import { assetUrl } from "../lib/asset-url";
 ---
 
 <Layout title="When Humans Vanish">
@@ -96,24 +97,54 @@ import { getStateForPlace } from "../lib/interaction";
       </div>
     </section>
 
-    <section class="closing-section" data-testid="closing-question">
-      <h2>A question, not a conclusion</h2>
-      <p>
-        In 4.5 billion years, countless species have appeared on this planet and
-        countless have gone. What do we — everything we make, everything we
-        live for — actually mean to something like Earth?
-      </p>
-      <p>
-        Here is what building this left me with. Four places that depend on us
-        to completely different degrees, run forward five hundred years, and
-        arrive at much the same place. Held against 4.5 billion years, maybe
-        the honest response is to put our arrogance away.
-      </p>
-      <p class="closing-section-invite">
-        If it leaves you with something different, I'd like to hear it.
-      </p>
-    </section>
   </main>
+
+  {/*
+    The epilogue. It sits outside <main> so it can run edge to edge without
+    fighting main's max-width — the usual full-bleed trick (width: 100vw plus
+    negative margins) overflows by the width of the scrollbar, which would show
+    up as horizontal scroll on the page.
+
+    The four seasons are not a tint effect: they are four real NASA composites
+    of the same year, so the snow line and the vegetation actually move. The
+    layers are CSS backgrounds rather than <img>, because they are decoration
+    with no informational content of their own and inventing alt text for them
+    would only add noise for a screen reader — the words below are the content.
+  */}
+  <section class="globe-section" data-testid="globe-section">
+    <div class="globe-stage">
+      <div class="globe-space" aria-hidden="true"></div>
+
+      <div class="globe" data-testid="globe" aria-hidden="true">
+        {(["winter", "spring", "summer", "autumn"] as const).map((season) => (
+          <div
+            class="globe-map"
+            data-season={season}
+            style={`background-image: url(${assetUrl(`globe/${season}.jpg`)})`}
+          />
+        ))}
+        <div class="globe-shade"></div>
+      </div>
+
+      <div class="globe-copy" data-testid="closing-question">
+        <h2>A question, not a conclusion</h2>
+        <p>
+          In 4.5 billion years, countless species have appeared on this planet
+          and countless have gone. What do we — everything we make, everything
+          we live for — actually mean to something like Earth?
+        </p>
+        <p>
+          Four places that depend on us to completely different degrees, run
+          forward five hundred years, and arrive at much the same place. Held
+          against 4.5 billion years, maybe the honest response is to put our
+          arrogance away.
+        </p>
+        <p class="globe-copy-invite">
+          If it leaves you with something different, I'd like to hear it.
+        </p>
+      </div>
+    </div>
+  </section>
   <footer class="site-footer">
     <div class="site-footer-inner">
       <p class="site-footer-note">
@@ -126,7 +157,15 @@ import { getStateForPlace } from "../lib/interaction";
           <li><a href={source.url}>{source.title}</a></li>
         ))}
       </ul>
+      <p class="site-footer-credit">
+        Globe imagery: four monthly composites from{" "}
+        <a href="https://earthobservatory.nasa.gov/features/BlueMarble">
+          Blue Marble: Next Generation
+        </a>{" "}
+        — NASA Earth Observatory (Reto Stöckli). Public domain.
+      </p>
     </div>
   </footer>
   <script src="../scripts/main.ts"></script>
+  <script src="../scripts/globe.ts"></script>
 </Layout>
