@@ -1,8 +1,12 @@
 1. What was the breakthrough that moved the work forward?
 
-   During Assignment 1, the first thing I needed to decide was the topic. Once it was confirmed, the brainstorming and planning process went quite smoothly. The main turning point came after Claude generated the first version of the website. Although it seemed to implement the plan, the result did not work smoothly in practice, especially the timeline section.
+   The breakthrough was learning that negative feedback works better when I not only reject something, but also give Claude a concrete target.
 
-   I kept giving Claude feedback, rejecting some of its proposals, and explaining what needed to be improved. After several rounds of revision, I finally achieved the result I wanted. Claude also became faster at understanding my intentions, which gave me a deeper understanding of how negative feedback can improve the development process.
+   The clearest example was the colour scheme. I asked Claude to change the site's colours to match my logo. The first version was too weak, so I said the change was not obvious enough. It tried again, but the result was still unclear. I realised that “not obvious enough” only told Claude how much to change, not what to match.
+
+   The third time, I told it I wanted two colours, blue and green, like the Earth drawing in my icon. That worked immediately. Claude gave each colour a clear role: blue for water and interactive elements, and green for land and headings.
+
+   The key difference was that I gave Claude something specific to aim at instead of only telling it what was wrong. After that, later changes usually took fewer rounds.
 
 2. What did this work change about who I want to be as a software developer?
 
